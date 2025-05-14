@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
-import { Session } from "./types/session";
+import { Session } from "../types/session";
 
 const ACCESS_TOKEN_KEY = "auth";
 

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { of, throwError } from 'rxjs';
-import { SessionService } from '../session.service';
+import { SessionService } from '../services/session.service';
 import { Router } from '@angular/router';
 
 @Component({

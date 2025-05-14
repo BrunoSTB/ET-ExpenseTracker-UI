@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLinkActive, RouterLink } from '@angular/router'
 import { Session } from '../types/session';
 import { Observable } from 'rxjs';
-import { SessionService } from '../session.service';
+import { SessionService } from '../services/session.service';
 
 @Component({
   selector: 'app-top-navbar',
