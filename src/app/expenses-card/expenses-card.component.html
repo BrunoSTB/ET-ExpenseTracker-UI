@@ -1,0 +1,35 @@
+<div class="card">
+    <div class="card-header">
+        <button class="card-button" (click)="toggleForm()"><img src="../assets/add-button-18px.png"></button>
+        <span class="month-name">{{getCurrentMonth()}}</span>
+        <button class="card-button" (click)="clearExpenseList()"><img src="../assets/deletebutton.png"></button>
+    </div>
+
+    <div class="card-body">
+        <div class="body-header">
+            <span class="name-column">Expense</span>
+            <span class="value-column">Value</span>
+            <span class="remove-column"></span>
+        </div>
+
+        <app-expense-form *ngIf="showForm" 
+                          (formSubmit)="handleFormSubmit($event)" 
+                          [biggestId]="this.biggestId" 
+                          [currentDate]="this.currentDate">
+        </app-expense-form>    
+        
+        <div class="body-content" *ngFor="let expense of expensesList">
+            <span class="name-column">{{ expense.name }}</span>
+            <span class="value-column">{{ expense.value }}</span>
+            <button class="remove-column card-button" (click)="removeExpense(expense.id)">
+                <img src="../assets/x-button-16px.png">
+            </button>
+        </div>
+        
+    </div>
+    
+    <div class="card-footer">
+        <span>Total</span>
+        <span class="total-value">{{ getSum() }}</span>
+    </div>
+</div>

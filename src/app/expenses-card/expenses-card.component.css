@@ -1,0 +1,65 @@
+.card {
+    background-color: #21242C;
+    width: 15rem;
+    margin: 1rem;
+    border: 1px solid #3a3a3e;
+    border-radius: 5%;
+    box-shadow: #212128 0rem 0rem 0.3rem;
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem;
+    text-align: center;
+    color: whitesmoke;
+}
+
+.card-header, .card-footer {
+    padding: 0.3rem;
+    color: #6B6E76;
+    display: flex;
+    text-align: center;
+    justify-content: space-between;
+}
+
+.month-name {
+    color: whitesmoke;
+    font-weight: bold;
+}
+
+.body-header {
+    font-size: 14px;
+    display: flex;
+    color: #6B6E76;
+}
+
+.body-content {
+    display: flex;
+    margin-top: 0.3rem;
+    padding-left: 0.1rem;
+}
+
+.name-column {
+    flex: 5;
+    text-align: left;
+}
+
+.value-column {
+    flex: 3;
+    text-align: right;
+}
+
+.remove-column {
+    padding-right: 0;
+    flex: 1;
+}
+
+.card-button {
+    background-color: #21242C;
+    border: none;
+    cursor: pointer;
+}
+
+.total-value {
+    color: brown;
+}
+
+

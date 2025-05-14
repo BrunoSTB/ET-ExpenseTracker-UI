@@ -1,0 +1,5 @@
+<form (ngSubmit)="createNewExpense()" #form="ngForm" class="new-entry">
+    <input class="name-column name-input" id="name" name="name" type="text" [(ngModel)]="formData.name" required>
+    <input class="value-column value-input" id="value" name="value" type="number" [(ngModel)]="formData.value" required>
+    <button type="submit"  class="card-button"><img src="../../assets/add-button-18px.png"></button>
+</form>

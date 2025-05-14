@@ -1,0 +1,35 @@
+<nav class="navbar">
+    <div class="navbar-content">
+        <a class="navbar-brand" href="/">ET - Expense Tracker</a>
+        <ul class="navbar-nav">
+            <ng-container *ngIf="session$ | async as session; else notLoggedIn">
+                <li class="nav-item"><a class="nav-link" routerLink="/" routerLinkActive="active" (click)="logout()">Logout</a></li>
+                <li *ngFor="let link of loggedInLinks" class="nav-item">
+                    <a
+                        [title]="link.label"
+                        routerLink="{{ link.path }}"
+                        routerLinkActive="active"
+                        class="nav-link"
+                        ariaCurrentWhenActive="page"
+                    >
+                        {{ link.label }}
+                    </a>
+                </li>
+            </ng-container>
+
+            <ng-template #notLoggedIn>
+                <li *ngFor="let link of loggedOutLinks" class="nav-item">
+                <a
+                    [title]="link.label"
+                    routerLink="{{ link.path }}"
+                    routerLinkActive="active"
+                    class="nav-link"
+                    ariaCurrentWhenActive="page"
+                >
+                    {{ link.label }}
+                </a>
+                </li>
+            </ng-template>
+        </ul>
+    </div>
+</nav>

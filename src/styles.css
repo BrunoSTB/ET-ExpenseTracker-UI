@@ -1,0 +1,81 @@
+/* You can add global styles to this file, and also import other style files */
+body {
+    background-color: #17181F;
+    font-family: sans-serif;
+}
+
+.al-left {
+    text-align: right;
+}
+
+.al-right {
+    text-align: right;
+}
+
+
+/* Auth - sign up and login */
+.auth-card {
+    width: 300px;
+    margin: 100px auto;
+    padding: 20px;
+    border: 1px solid #3a3a3e;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #21242C;
+    text-align: center;
+    color: whitesmoke;
+  }
+  
+  .auth-card h2 {
+    margin-bottom: 20px;
+  }
+  
+  .auth-card div {
+    margin-bottom: 15px;
+    text-align: left;
+  }
+  
+  .auth-card label {
+    display: block;
+    margin-bottom: 5px;
+    color: whitesmoke;
+    font-weight: bold;
+  }
+  
+  .auth-card input {
+    width: calc(100% - 12px);
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    box-sizing: border-box;
+  }
+  
+  .auth-card button[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .auth-card button[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+  
+  .auth-card .redirect-link {
+    margin-top: 10px;
+    font-size: 14px;
+    color: rgb(180, 180, 180);
+  }
+  
+  .auth-card .redirect-link a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .auth-card .redirect-link a:hover {
+    text-decoration: underline;
+  }
+  
