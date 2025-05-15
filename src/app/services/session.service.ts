@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { Session } from "../types/session";
 
-const ACCESS_TOKEN_KEY = "auth";
+const ACCESS_TOKEN_KEY = "accessToken";
 
 @Injectable({
   providedIn: "root",
@@ -31,10 +31,7 @@ export class SessionService {
   }
 
   saveSession(sessionData: Session) {
-    sessionStorage.setItem(
-      ACCESS_TOKEN_KEY,
-      JSON.stringify(sessionData)
-    );
+    localStorage.setItem(ACCESS_TOKEN_KEY, 'Bearer ' + sessionData.accessToken);
 
     this.session.next(sessionData); // sends a new value to whomever is listeting to the observable 
   }

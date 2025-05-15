@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { User } from '../types/user';
 
 
 @Component({
@@ -18,18 +20,36 @@ export class UserSignupComponent {
     confirmPassword: ''
   };
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, 
+              private http: HttpClient) { }
 
   onSignupSubmit() {
-    //  add your signup logic here.
-    console.log('Signup form submitted:', this.signupCredentials);
     //  basic validation
     if (this.signupCredentials.password !== this.signupCredentials.confirmPassword) {
       alert('Passwords do not match!');
       return;
     }
+    
+    //  add your signup logic here.
+    var userInfo: User = this.signupCredentials;
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    
+    this.http.post('https://localhost:7010/User/Register', userInfo, httpOptions)
+      .subscribe({
+        next: (response) => {
+          console.log(response);
+        },
+        error: (err) => {
+          console.error('Error fetching data:', err);
+        }
+      });
 
     //  redirect to login page after successful signup
     this.router.navigate(['/login']);
+    alert('Registration completed!');
   }
 }
