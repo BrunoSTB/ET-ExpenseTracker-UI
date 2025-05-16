@@ -40,9 +40,6 @@ export class UserSignupComponent {
     
     this.http.post('https://localhost:7010/User/Register', userInfo, httpOptions)
       .subscribe({
-        next: (response) => {
-          console.log(response);
-        },
         error: (err) => {
           console.error('Error fetching data:', err);
         }

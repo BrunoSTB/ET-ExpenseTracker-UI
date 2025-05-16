@@ -1,5 +1,5 @@
-<div class="card-list">
+<div class="card-list" *ngIf="!isLoading">
     <div  *ngFor="let month of monthList">
-        <app-expenses-card [currentDate]="month"></app-expenses-card>
+        <app-expenses-card [currentDate]="month" [monthExpenses]="getExpensesForMonth(month.getMonth())"></app-expenses-card>
     </div>
 </div>

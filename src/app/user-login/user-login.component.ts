@@ -24,7 +24,6 @@ export class UserLoginComponent {
 
   onSubmit() {
     
-    console.log('login submitted: ', this.credentials);
     
     //  add your signup logic here.
     const httpOptions = {
@@ -36,14 +35,12 @@ export class UserLoginComponent {
     this.http.post<Session>('https://localhost:7010/User/Login', this.credentials, httpOptions)
       .subscribe({
         next: (sessionData) => {
-          console.log('Login successful!', sessionData);
           this.sessionService.saveSession(sessionData);
           this.router.navigate(['/']);
         },
         error: (error) => {
           console.error('Login failed:', error);
         },
-      }
-    );
+      });
   }
 }

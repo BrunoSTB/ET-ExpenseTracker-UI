@@ -45,6 +45,10 @@ export class SessionService {
     return this.session.asObservable();
   }
 
+  getToken() {
+    return localStorage.getItem(ACCESS_TOKEN_KEY);
+  }
+
   isLoggedIn() {
     return this.session.value !== null;
   }

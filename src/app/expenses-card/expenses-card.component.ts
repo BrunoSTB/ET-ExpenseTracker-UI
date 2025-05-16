@@ -1,8 +1,9 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Expense, expenses } from '../types/expenses'
 import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ExpenseFormComponent } from '../expense-form/expense-form.component';
+import { ExpenseList } from '../types/expenseList';
 
 @Component({
   selector: 'app-expenses-card',
@@ -12,9 +13,16 @@ import { ExpenseFormComponent } from '../expense-form/expense-form.component';
   styleUrl: './expenses-card.component.css'
 })
 
-export class ExpensesCardComponent {
+export class ExpensesCardComponent implements OnInit {
   @Input() currentDate: Date = new Date();
-  expensesList = [...expenses];
+  @Input() monthExpenses: ExpenseList = {expenses: [], expensesMonth: this.currentDate.getMonth(), totalExpenses:0, userId: 0};
+  expensesList: Expense[] = [];
+  
+  ngOnInit(): void {
+      this.expensesList = this.monthExpenses.expenses;
+  }
+  
+  
   biggestId = this.getItemWithHighestId(); 
   showForm: boolean = false;
 
