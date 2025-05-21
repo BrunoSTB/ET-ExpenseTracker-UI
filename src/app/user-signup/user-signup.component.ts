@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { User } from '../types/user';
+import { environment } from '../../environments/environment';
 
 
 @Component({
@@ -38,7 +39,7 @@ export class UserSignupComponent {
       })
     };
     
-    this.http.post('https://localhost:7010/User/Register', userInfo, httpOptions)
+    this.http.post(environment.apiUri + 'User/Register', userInfo, httpOptions)
       .subscribe({
         error: (err) => {
           console.error('Error fetching data:', err);

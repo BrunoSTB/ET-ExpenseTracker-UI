@@ -4,6 +4,7 @@ import { SessionService } from '../services/session.service';
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Session } from '../types/session';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-user-login',
@@ -32,7 +33,7 @@ export class UserLoginComponent {
       })
     };
     
-    this.http.post<Session>('https://localhost:7010/User/Login', this.credentials, httpOptions)
+    this.http.post<Session>(environment.apiUri + 'User/Login', this.credentials, httpOptions)
       .subscribe({
         next: (sessionData) => {
           this.sessionService.saveSession(sessionData);

@@ -6,6 +6,7 @@ import { ExpenseFormComponent } from '../expense-form/expense-form.component';
 import { ExpenseList } from '../types/expenseList';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { SessionService } from '../services/session.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-expenses-card',
@@ -61,7 +62,7 @@ export class ExpensesCardComponent implements OnInit {
         params = params.append('ids', id.toString());
       });
 
-      this.http.delete('https://localhost:7010/Expense/DeleteByIds', { headers, params })
+      this.http.delete(environment.apiUri + 'Expense/DeleteByIds', { headers, params })
       .subscribe({
         next: () => {console.log("Deleted sucessfully");},
         error: (err) => {

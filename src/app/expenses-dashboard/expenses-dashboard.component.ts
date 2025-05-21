@@ -4,6 +4,7 @@ import { NgFor, NgIf } from '@angular/common';
 import { ExpenseList } from '../types/expenseList';
 import { SessionService } from '../services/session.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-expenses-dashboard',
@@ -40,7 +41,7 @@ export class ExpensesDashboardComponent implements OnInit {
     const headers = new HttpHeaders({
       'Authorization': `${this.sessionService.getToken()}`,
     });
-    this.http.get<ExpenseList[]>('https://localhost:7010/Expense?year=2025', { headers })
+    this.http.get<ExpenseList[]>(environment.apiUri + 'Expense?year=2025', { headers })
       .subscribe({
         next: (response) => { 
           this.yearlyExpenses = response; 

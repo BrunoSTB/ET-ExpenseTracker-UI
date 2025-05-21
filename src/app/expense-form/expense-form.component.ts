@@ -3,6 +3,7 @@ import { Expense } from '../types/expenses';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { SessionService } from '../services/session.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-expense-form',
@@ -33,7 +34,7 @@ export class ExpenseFormComponent {
     const headers = new HttpHeaders({
       'Authorization': `${this.sessionService.getToken()}`,
     });
-    this.http.post('https://localhost:7010/Expense', result, { headers })
+    this.http.post(environment.apiUri + 'Expense', result, { headers })
       .subscribe({
         next: () => {this.formSubmit.emit(result);},
         error: (err) => {
