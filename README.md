@@ -54,6 +54,39 @@ ng e2e
 
 Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
 
+## Deploy
+
+O deploy é feito automaticamente pelo GitHub Actions (`.github/workflows/azure-static-web-apps.yml`) para o **Azure Static Web Apps**, a cada push ou pull request para a branch `main`. O workflow instala as dependências, gera `src/environments/environment.prod.ts` com a URL da API vinda de um secret e builda o Angular antes de publicar o conteúdo de `dist/expense-tracker/browser`.
+
+### Secrets necessários no repositório
+
+Configure em **Settings → Secrets and variables → Actions**:
+
+| Secret | Descrição |
+| --- | --- |
+| `AZURE_STATIC_WEB_APPS_API_TOKEN` | Token de deploy do recurso Azure Static Web Apps |
+| `API_URI` | URL base da API publicada (ex.: `https://et-server-cwhfh6g9apb2b6cw.brazilsouth-01.azurewebsites.net/`) |
+
+### Criando o recurso Azure Static Web Apps
+
+```bash
+az staticwebapp create --name et-expense-tracker-ui \
+  --resource-group <resource-group-da-api> \
+  --location "East US 2" --sku Free
+```
+
+Regiões suportadas: East US 2, West US 2, Central US, West Europe, East Asia.
+
+Para obter o token de deploy (valor do secret `AZURE_STATIC_WEB_APPS_API_TOKEN`):
+
+```bash
+az staticwebapp secrets list --name et-expense-tracker-ui --query "properties.apiKey" -o tsv
+```
+
+### CORS na API
+
+Após o primeiro deploy, o Azure gera uma URL própria para o site (ex.: `https://xxxxx.azurestaticapps.net`). Adicione essa URL na variável de ambiente `CORSOrigins` das Application Settings do App Service da API e reinicie o serviço, para que a API aceite requisições vindas do front publicado.
+
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
