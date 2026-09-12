@@ -7,6 +7,7 @@ import {
 
 import { ExpensesDashboardComponent } from './expenses-dashboard.component';
 import { ExpenseList } from '../types/expenseList';
+import { environment } from '../../environments/environment';
 
 describe('ExpensesDashboardComponent', () => {
   let component: ExpensesDashboardComponent;
@@ -38,6 +39,21 @@ describe('ExpensesDashboardComponent', () => {
   it('should create', () => {
     flushExpenses();
     expect(component).toBeTruthy();
+  });
+
+  // Regressão #7: a query estava fixa em year=2025 enquanto os cards vinham
+  // do ano corrente, então fora de 2025 o dashboard ficava todo zerado.
+  it('should query the same year it renders', () => {
+    const currentYear = new Date().getFullYear();
+    fixture.detectChanges();
+
+    // O ano vai embutido na própria URL, não em HttpParams.
+    const req = httpMock.expectOne(
+      environment.apiUri + `Expense?year=${currentYear}`
+    );
+    req.flush([]);
+
+    expect(component.monthList[0].getFullYear()).toBe(currentYear);
   });
 
   it('should build one month per month of the year', () => {

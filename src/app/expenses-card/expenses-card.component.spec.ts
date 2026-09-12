@@ -8,6 +8,7 @@ import {
 import { ExpensesCardComponent } from './expenses-card.component';
 import { Expense } from '../types/expenses';
 import { ExpenseList } from '../types/expenseList';
+import { environment } from '../../environments/environment';
 
 describe('ExpensesCardComponent', () => {
   let component: ExpensesCardComponent;
@@ -129,5 +130,43 @@ describe('ExpensesCardComponent', () => {
     component.toggleForm();
 
     expect(component.showForm).toBeTrue();
+  });
+
+  describe('removeExpense', () => {
+    beforeEach(() => {
+      component.monthExpenses = monthWith([
+        new Expense(1, 'Aluguel', 850, new Date()),
+        new Expense(2, 'Tim', 42.99, new Date()),
+      ]);
+      fixture.detectChanges();
+    });
+
+    it('should drop the expense from the list', () => {
+      component.removeExpense(1);
+
+      expect(component.expensesList.map((e) => e.id)).toEqual([2]);
+      httpMock.expectOne((req) => req.url.includes('DeleteByIds')).flush({});
+    });
+
+    // Regressão #5: a URL estava fixa em https://localhost:7010, então o
+    // delete individual nunca chegava na API publicada.
+    it('should call the configured API, not a hardcoded localhost', () => {
+      component.removeExpense(1);
+
+      const req = httpMock.expectOne(
+        (r) => r.url === environment.apiUri + 'Expense/DeleteByIds'
+      );
+      expect(req.request.method).toBe('DELETE');
+      req.flush({});
+    });
+
+    // Regressão #5: o id era enviado duas vezes (.set seguido de .append).
+    it('should send the id exactly once', () => {
+      component.removeExpense(1);
+
+      const req = httpMock.expectOne((r) => r.url.includes('DeleteByIds'));
+      expect(req.request.params.getAll('ids')).toEqual(['1']);
+      req.flush({});
+    });
   });
 });
