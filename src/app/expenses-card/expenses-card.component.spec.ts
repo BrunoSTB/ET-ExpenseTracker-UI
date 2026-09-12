@@ -48,11 +48,34 @@ describe('ExpensesCardComponent', () => {
     expect(component.expensesList).toEqual(expenses);
   });
 
-  it('should show the month name of the date it receives', () => {
-    component.currentDate = new Date(2026, 2, 1);
-    fixture.detectChanges();
+  describe('getCurrentMonth', () => {
+    // getCurrentMonth() usa toLocaleString('default'), que resolve pelo locale
+    // do browser: 'March' num runner en-US, 'março' num Windows pt-BR. Cravar a
+    // string quebraria na máquina de quem roda com outro locale, então as
+    // asserções comparam com a formatação equivalente.
+    function monthNameOf(date: Date): string {
+      return date.toLocaleString('default', { month: 'long' });
+    }
 
-    expect(component.getCurrentMonth().toLowerCase()).toContain('march');
+    it('should render the month of the date it receives', () => {
+      const march = new Date(2026, 2, 1);
+      component.currentDate = march;
+      fixture.detectChanges();
+
+      expect(component.getCurrentMonth()).toBe(monthNameOf(march));
+    });
+
+    it('should follow the date it receives instead of today', () => {
+      // Seis meses de distância garante um mês diferente do atual em qualquer
+      // época do ano.
+      const today = new Date();
+      const otherMonth = new Date(today.getFullYear(), (today.getMonth() + 6) % 12, 1);
+      component.currentDate = otherMonth;
+      fixture.detectChanges();
+
+      expect(component.getCurrentMonth()).toBe(monthNameOf(otherMonth));
+      expect(component.getCurrentMonth()).not.toBe(monthNameOf(today));
+    });
   });
 
   describe('getSum', () => {
