@@ -23,7 +23,8 @@ jobs:
       # cache do package-lock.json e, como o deploy depende deste job, seria
       # este job — que executa a suíte e os lifecycle scripts do npm — a
       # popular o cache que o job privilegiado de deploy restaura para gerar
-      # o artefato publicado (actions/cache-poisoning).
+      # o artefato publicado. O custo de abrir mão do cache aqui é de alguns
+      # segundos; a alternativa acopla o build publicado ao que roda no teste.
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
