@@ -65,7 +65,7 @@ Configure em **Settings → Secrets and variables → Actions**:
 | Secret | Descrição |
 | --- | --- |
 | `AZURE_STATIC_WEB_APPS_API_TOKEN` | Token de deploy do recurso Azure Static Web Apps |
-| `API_URI` | URL base da API publicada (ex.: `https://et-server-cwhfh6g9apb2b6cw.brazilsouth-01.azurewebsites.net/`) |
+| `API_URI` | URL base da API publicada (ex.: `https://expense-tracker-api.proudforest-e65009bc.brazilsouth.azurecontainerapps.io/`) |
 
 ### Criando o recurso Azure Static Web Apps
 
