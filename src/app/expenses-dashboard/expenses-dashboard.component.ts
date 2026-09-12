@@ -14,6 +14,9 @@ import { environment } from '../../environments/environment';
   styleUrl: './expenses-dashboard.component.css'
 })
 export class ExpensesDashboardComponent implements OnInit {
+  // Uma única fonte para o ano, para que os cards exibidos e a busca na API
+  // nunca divirjam.
+  year = new Date().getFullYear();
   monthList = this.getFirstDayOfEachMonth();
   yearlyExpenses: ExpenseList[] = [];
   isLoading: boolean = true;
@@ -26,11 +29,10 @@ export class ExpensesDashboardComponent implements OnInit {
   } 
 
   getFirstDayOfEachMonth(): Date[] {
-    const currentYear = new Date().getFullYear();
     const months = [];
   
     for (let month = 0; month < 12; month++) {
-      const firstDay = new Date(currentYear, month, 1);
+      const firstDay = new Date(this.year, month, 1);
       months.push(firstDay);
     }
   
@@ -41,7 +43,7 @@ export class ExpensesDashboardComponent implements OnInit {
     const headers = new HttpHeaders({
       'Authorization': `${this.sessionService.getToken()}`,
     });
-    this.http.get<ExpenseList[]>(environment.apiUri + 'Expense?year=2025', { headers })
+    this.http.get<ExpenseList[]>(environment.apiUri + `Expense?year=${this.year}`, { headers })
       .subscribe({
         next: (response) => { 
           this.yearlyExpenses = response; 

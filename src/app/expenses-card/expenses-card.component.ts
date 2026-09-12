@@ -87,10 +87,9 @@ export class ExpensesCardComponent implements OnInit {
         'Authorization': `${this.sessionService.getToken()}`,
       });
 
-    let params = new HttpParams().set('ids', expenseId);
-    params = params.append('ids', expenseId.toString());
+    const params = new HttpParams().set('ids', expenseId.toString());
 
-    this.http.delete('https://localhost:7010/Expense/DeleteByIds', { headers, params })
+    this.http.delete(environment.apiUri + 'Expense/DeleteByIds', { headers, params })
     .subscribe({
       next: () => {console.log("Deleted sucessfully");},
       error: (err) => {

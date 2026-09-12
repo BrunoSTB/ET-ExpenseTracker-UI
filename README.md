@@ -38,11 +38,30 @@ This will compile your project and store the build artifacts in the `dist/` dire
 
 ## Running unit tests
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+Para rodar os testes em modo watch, com o browser aberto:
 
 ```bash
-ng test
+npm test
 ```
+
+Para rodar uma vez em modo headless, com relatório de cobertura (é o que o CI executa):
+
+```bash
+npm run test:ci
+```
+
+O `test:ci` usa o launcher `ChromeHeadlessNoSandbox` definido em `karma.conf.js` — o `--no-sandbox` é
+necessário quando o Chrome roda como root dentro de um container. Se o Karma não encontrar o browser,
+aponte o binário explicitamente:
+
+```bash
+CHROME_BIN=$(which google-chrome) npm run test:ci
+```
+
+O relatório de cobertura fica em `coverage/expense-tracker/` (HTML e `lcov.info`).
+
+Os testes rodam no GitHub Actions no job `test_job`, que é pré-requisito do job de build e deploy:
+um PR com teste quebrado não chega a ser publicado.
 
 ## Running end-to-end tests
 
