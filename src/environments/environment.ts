@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUri: 'https://et-server-cwhfh6g9apb2b6cw.brazilsouth-01.azurewebsites.net/'
+  apiUri: 'https://expense-tracker-api.proudforest-e65009bc.brazilsouth.azurecontainerapps.io/'
 };
