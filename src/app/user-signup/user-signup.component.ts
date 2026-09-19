@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { AuthService } from '../services/auth.service';
 import { User } from '../types/user';
-import { environment } from '../../environments/environment';
 
 
 @Component({
@@ -21,8 +20,8 @@ export class UserSignupComponent {
     confirmPassword: ''
   };
 
-  constructor(private router: Router, 
-              private http: HttpClient) { }
+  constructor(private router: Router,
+              private authService: AuthService) { }
 
   onSignupSubmit() {
     //  basic validation
@@ -30,16 +29,11 @@ export class UserSignupComponent {
       alert('Passwords do not match!');
       return;
     }
-    
+
     //  add your signup logic here.
     var userInfo: User = this.signupCredentials;
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
-    
-    this.http.post(environment.apiUri + 'User/Register', userInfo, httpOptions)
+
+    this.authService.register(userInfo)
       .subscribe({
         error: (err) => {
           console.error('Error fetching data:', err);

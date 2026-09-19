@@ -1,9 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Expense } from '../types/expenses';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { SessionService } from '../services/session.service';
-import { environment } from '../../environments/environment';
+import { ExpenseService } from '../services/expense.service';
 
 @Component({
   selector: 'app-expense-form',
@@ -18,7 +16,7 @@ export class ExpenseFormComponent {
   @Input() currentDate: Date = new Date();
   @Output() formSubmit = new EventEmitter<Expense>();
 
-  constructor(private http: HttpClient, private sessionService: SessionService) { }
+  constructor(private expenseService: ExpenseService) { }
 
   formData = {
     name: '',
@@ -27,14 +25,11 @@ export class ExpenseFormComponent {
 
   createNewExpense(){
     let result = new Expense(++this.biggestId,
-                             this.formData.name, 
-                             this.formData.value, 
+                             this.formData.name,
+                             this.formData.value,
                              this.currentDate);
-    
-    const headers = new HttpHeaders({
-      'Authorization': `${this.sessionService.getToken()}`,
-    });
-    this.http.post(environment.apiUri + 'Expense', result, { headers })
+
+    this.expenseService.create(result)
       .subscribe({
         next: () => {this.formSubmit.emit(result);},
         error: (err) => {
