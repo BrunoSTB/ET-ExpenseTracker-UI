@@ -4,9 +4,7 @@ import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ExpenseFormComponent } from '../expense-form/expense-form.component';
 import { ExpenseList } from '../types/expenseList';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { SessionService } from '../services/session.service';
-import { environment } from '../../environments/environment';
+import { ExpenseService } from '../services/expense.service';
 
 @Component({
   selector: 'app-expenses-card',
@@ -20,15 +18,15 @@ export class ExpensesCardComponent implements OnInit {
   @Input() currentDate: Date = new Date();
   @Input() monthExpenses: ExpenseList = {expenses: [], expensesMonth: this.currentDate.getMonth(), totalExpenses:0, userId: 0};
   expensesList: Expense[] = [];
-  
-  constructor(private http: HttpClient, private sessionService: SessionService) { }
-  
+
+  constructor(private expenseService: ExpenseService) { }
+
   ngOnInit(): void {
       this.expensesList = this.monthExpenses.expenses;
   }
 
-  
-  biggestId = this.getItemWithHighestId(); 
+
+  biggestId = this.getItemWithHighestId();
   showForm: boolean = false;
 
   handleFormSubmit(formData: Expense) {
@@ -39,7 +37,7 @@ export class ExpensesCardComponent implements OnInit {
     }
     this.toggleForm();
   }
- 
+
   toggleForm() {
     this.showForm = !this.showForm;
   }
@@ -53,22 +51,13 @@ export class ExpensesCardComponent implements OnInit {
       let ids = this.expensesList.map(x => x.id);
       this.expensesList = [];
 
-      const headers = new HttpHeaders({
-        'Authorization': `${this.sessionService.getToken()}`,
-      });
-
-      let params = new HttpParams();
-      ids.forEach(id => {
-        params = params.append('ids', id.toString());
-      });
-
-      this.http.delete(environment.apiUri + 'Expense/DeleteByIds', { headers, params })
-      .subscribe({
-        next: () => {console.log("Deleted sucessfully");},
-        error: (err) => {
-          console.error('Error fetching data:', err);
-        }
-      });
+      this.expenseService.deleteByIds(ids)
+        .subscribe({
+          next: () => {console.log("Deleted sucessfully");},
+          error: (err) => {
+            console.error('Error fetching data:', err);
+          }
+        });
     }
   }
 
@@ -82,20 +71,14 @@ export class ExpensesCardComponent implements OnInit {
 
   removeExpense(expenseId: number) {
     this.expensesList = this.expensesList.filter(x => x.id !== expenseId);
-    
-    const headers = new HttpHeaders({
-        'Authorization': `${this.sessionService.getToken()}`,
+
+    this.expenseService.deleteByIds([expenseId])
+      .subscribe({
+        next: () => {console.log("Deleted sucessfully");},
+        error: (err) => {
+          console.error('Error fetching data:', err);
+        }
       });
-
-    const params = new HttpParams().set('ids', expenseId.toString());
-
-    this.http.delete(environment.apiUri + 'Expense/DeleteByIds', { headers, params })
-    .subscribe({
-      next: () => {console.log("Deleted sucessfully");},
-      error: (err) => {
-        console.error('Error fetching data:', err);
-      }
-    });
   }
 
   getSum() {

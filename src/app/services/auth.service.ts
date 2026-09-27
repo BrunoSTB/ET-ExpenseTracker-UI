@@ -1,30 +1,23 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { of, throwError } from "rxjs";
+import { environment } from "../../environments/environment";
+import { Session } from "../types/session";
+import { User } from "../types/user";
 
-@Injectable()
+@Injectable({
+  providedIn: "root",
+})
 export class AuthService {
-     
-    constructor(private http: HttpClient) {
-    }
-      
-    login(email:string, password:string ) {
-      return email === "admin" &&
-            password === "123"
-            ? of({
-                name: "admin",
-                accessToken: "aaa",
-              })
-            : throwError(() => {
-                const error: any = new Error(
-                  `Usuário ou senha inválido`
-                );
-                error.timestamp = Date.now();
-                return error;
-              });
-        //return this.http.post<User>('/api/login', {email, password})
-            // this is just the HTTP call, 
-            // we still need to handle the reception of the token
-            //.shareReplay();
-    }
+  constructor(private http: HttpClient) {}
+
+  login(credentials: { username: string; password: string }) {
+    return this.http.post<Session>(
+      environment.apiUri + "User/Login",
+      credentials
+    );
+  }
+
+  register(user: User) {
+    return this.http.post(environment.apiUri + "User/Register", user);
+  }
 }

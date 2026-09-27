@@ -1,10 +1,8 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SessionService } from '../services/session.service';
+import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Session } from '../types/session';
-import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-user-login',
@@ -19,21 +17,12 @@ export class UserLoginComponent {
     password: ''
   }
 
-  constructor(private sessionService: SessionService,
-              private router: Router,
-              private http: HttpClient) {}
+  constructor(private authService: AuthService,
+              private sessionService: SessionService,
+              private router: Router) {}
 
   onSubmit() {
-    
-    
-    //  add your signup logic here.
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
-    
-    this.http.post<Session>(environment.apiUri + 'User/Login', this.credentials, httpOptions)
+    this.authService.login(this.credentials)
       .subscribe({
         next: (sessionData) => {
           this.sessionService.saveSession(sessionData);
