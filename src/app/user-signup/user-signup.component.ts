@@ -19,29 +19,33 @@ export class UserSignupComponent {
     password: '',
     confirmPassword: ''
   };
+  errorMessage: string | null = null;
 
   constructor(private router: Router,
               private authService: AuthService) { }
 
   onSignupSubmit() {
+    this.errorMessage = null;
+
     //  basic validation
     if (this.signupCredentials.password !== this.signupCredentials.confirmPassword) {
-      alert('Passwords do not match!');
+      this.errorMessage = 'Passwords do not match!';
       return;
     }
 
-    //  add your signup logic here.
-    var userInfo: User = this.signupCredentials;
+    //  confirmPassword é só da UI, não vai para a API.
+    const { confirmPassword, ...userInfo } = this.signupCredentials;
+    const user: User = userInfo;
 
-    this.authService.register(userInfo)
+    this.authService.register(user)
       .subscribe({
-        error: (err) => {
-          console.error('Error fetching data:', err);
+        next: () => {
+          //  redirect to login page after successful signup
+          this.router.navigate(['/login'], { state: { registered: true } });
+        },
+        error: () => {
+          this.errorMessage = 'Registration failed. Please try again.';
         }
       });
-
-    //  redirect to login page after successful signup
-    this.router.navigate(['/login']);
-    alert('Registration completed!');
   }
 }

@@ -28,6 +28,8 @@ export class ExpensesCardComponent implements OnInit {
 
   biggestId = this.getItemWithHighestId();
   showForm: boolean = false;
+  confirmingClear: boolean = false;
+  errorMessage: string | null = null;
 
   handleFormSubmit(formData: Expense) {
     if(formData.name.length > 0)
@@ -47,18 +49,19 @@ export class ExpensesCardComponent implements OnInit {
   }
 
   clearExpenseList() {
-    if (confirm("Do you really want to clear all of your expenses?")){
-      let ids = this.expensesList.map(x => x.id);
-      this.expensesList = [];
+    this.confirmingClear = false;
+    const previous = this.expensesList;
+    let ids = previous.map(x => x.id);
+    this.expensesList = [];
+    this.errorMessage = null;
 
-      this.expenseService.deleteByIds(ids)
-        .subscribe({
-          next: () => {console.log("Deleted sucessfully");},
-          error: (err) => {
-            console.error('Error fetching data:', err);
-          }
-        });
-    }
+    this.expenseService.deleteByIds(ids)
+      .subscribe({
+        error: () => {
+          this.expensesList = previous;
+          this.errorMessage = 'Could not clear the expenses.';
+        }
+      });
   }
 
   getItemWithHighestId(): number {
@@ -70,13 +73,15 @@ export class ExpensesCardComponent implements OnInit {
   }
 
   removeExpense(expenseId: number) {
-    this.expensesList = this.expensesList.filter(x => x.id !== expenseId);
+    const previous = this.expensesList;
+    this.expensesList = previous.filter(x => x.id !== expenseId);
+    this.errorMessage = null;
 
     this.expenseService.deleteByIds([expenseId])
       .subscribe({
-        next: () => {console.log("Deleted sucessfully");},
-        error: (err) => {
-          console.error('Error fetching data:', err);
+        error: () => {
+          this.expensesList = previous;
+          this.errorMessage = 'Could not remove the expense.';
         }
       });
   }

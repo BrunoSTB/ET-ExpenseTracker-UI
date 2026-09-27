@@ -15,7 +15,7 @@ describe('ExpensesCardComponent', () => {
   let fixture: ComponentFixture<ExpensesCardComponent>;
   let httpMock: HttpTestingController;
 
-  function monthWith(expenses: Expense[]): ExpenseList {
+  function mockMonthWithExpenses(expenses: Expense[]): ExpenseList {
     return { userId: 1, expensesMonth: 3, totalExpenses: 0, expenses };
   }
 
@@ -41,7 +41,7 @@ describe('ExpensesCardComponent', () => {
 
   it('should expose the expenses of the month it receives', () => {
     const expenses = [new Expense(1, 'Aluguel', 850, new Date())];
-    component.monthExpenses = monthWith(expenses);
+    component.monthExpenses = mockMonthWithExpenses(expenses);
 
     fixture.detectChanges();
 
@@ -85,7 +85,7 @@ describe('ExpensesCardComponent', () => {
     });
 
     it('should add up the expense values', () => {
-      component.monthExpenses = monthWith([
+      component.monthExpenses = mockMonthWithExpenses([
         new Expense(1, 'Aluguel', 850, new Date()),
         new Expense(2, 'Tim', 42.99, new Date()),
       ]);
@@ -95,7 +95,7 @@ describe('ExpensesCardComponent', () => {
     });
 
     it('should round floating point noise to two decimals', () => {
-      component.monthExpenses = monthWith([
+      component.monthExpenses = mockMonthWithExpenses([
         new Expense(1, 'A', 0.1, new Date()),
         new Expense(2, 'B', 0.2, new Date()),
       ]);
@@ -112,7 +112,7 @@ describe('ExpensesCardComponent', () => {
     });
 
     it('should return the highest id in the list', () => {
-      component.monthExpenses = monthWith([
+      component.monthExpenses = mockMonthWithExpenses([
         new Expense(3, 'A', 1, new Date()),
         new Expense(7, 'B', 1, new Date()),
         new Expense(5, 'C', 1, new Date()),
@@ -157,7 +157,7 @@ describe('ExpensesCardComponent', () => {
 
   describe('removeExpense', () => {
     beforeEach(() => {
-      component.monthExpenses = monthWith([
+      component.monthExpenses = mockMonthWithExpenses([
         new Expense(1, 'Aluguel', 850, new Date()),
         new Expense(2, 'Tim', 42.99, new Date()),
       ]);
@@ -183,6 +183,17 @@ describe('ExpensesCardComponent', () => {
       req.flush({});
     });
 
+    it('should restore the expense and show an error when the API fails', () => {
+      component.removeExpense(1);
+
+      httpMock
+        .expectOne((r) => r.url.includes('DeleteByIds'))
+        .flush(null, { status: 500, statusText: 'Server Error' });
+
+      expect(component.expensesList.map((e) => e.id)).toEqual([1, 2]);
+      expect(component.errorMessage).toBeTruthy();
+    });
+
     // Regressão #5: o id era enviado duas vezes (.set seguido de .append).
     it('should send the id exactly once', () => {
       component.removeExpense(1);
@@ -190,6 +201,39 @@ describe('ExpensesCardComponent', () => {
       const req = httpMock.expectOne((r) => r.url.includes('DeleteByIds'));
       expect(req.request.params.getAll('ids')).toEqual(['1']);
       req.flush({});
+    });
+  });
+
+  describe('clearExpenseList', () => {
+    beforeEach(() => {
+      component.monthExpenses = mockMonthWithExpenses([
+        new Expense(1, 'Aluguel', 850, new Date()),
+        new Expense(2, 'Tim', 42.99, new Date()),
+      ]);
+      fixture.detectChanges();
+    });
+
+    it('should clear the list and send every id', () => {
+      component.confirmingClear = true;
+
+      component.clearExpenseList();
+
+      expect(component.expensesList).toEqual([]);
+      expect(component.confirmingClear).toBeFalse();
+      const req = httpMock.expectOne((r) => r.url.includes('DeleteByIds'));
+      expect(req.request.params.getAll('ids')).toEqual(['1', '2']);
+      req.flush({});
+    });
+
+    it('should restore the list and show an error when the API fails', () => {
+      component.clearExpenseList();
+
+      httpMock
+        .expectOne((r) => r.url.includes('DeleteByIds'))
+        .flush(null, { status: 500, statusText: 'Server Error' });
+
+      expect(component.expensesList.map((e) => e.id)).toEqual([1, 2]);
+      expect(component.errorMessage).toBeTruthy();
     });
   });
 });

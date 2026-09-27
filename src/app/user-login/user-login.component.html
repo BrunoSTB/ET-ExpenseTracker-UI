@@ -1,5 +1,11 @@
 <div class="auth-card">
     <h2>Login</h2>
+    @if (successMessage) {
+      <p class="success-message">{{ successMessage }}</p>
+    }
+    @if (errorMessage) {
+      <p class="error-message">{{ errorMessage }}</p>
+    }
     <form (ngSubmit)="onSubmit()">
       <div>
         <label for="username">Username:</label>

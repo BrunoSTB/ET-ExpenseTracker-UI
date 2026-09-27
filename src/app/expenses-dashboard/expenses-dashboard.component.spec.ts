@@ -71,6 +71,18 @@ describe('ExpensesDashboardComponent', () => {
     expect(component.isLoading).toBeFalse();
   });
 
+  it('should stop loading and show an error when the API fails', () => {
+    fixture.detectChanges();
+    httpMock
+      .expectOne((req) => req.url.includes('Expense'))
+      .flush(null, { status: 500, statusText: 'Server Error' });
+    fixture.detectChanges();
+
+    expect(component.isLoading).toBeFalse();
+    expect(component.errorMessage).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.error-message')).not.toBeNull();
+  });
+
   it('should return the expense list matching the requested month', () => {
     const march: ExpenseList = {
       userId: 1,

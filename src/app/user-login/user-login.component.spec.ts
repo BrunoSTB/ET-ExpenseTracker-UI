@@ -4,7 +4,7 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 
 import { UserLoginComponent } from './user-login.component';
 import { environment } from '../../environments/environment';
@@ -54,5 +54,19 @@ describe('UserLoginComponent', () => {
       password: 'secret',
     });
     req.flush({ username: 'bruno', accessToken: 'token-123' });
+  });
+
+  it('should show an error message when the login fails', () => {
+    const router = TestBed.inject(Router);
+    spyOn(router, 'navigate');
+    component.onSubmit();
+
+    httpMock
+      .expectOne(environment.apiUri + 'User/Login')
+      .flush(null, { status: 401, statusText: 'Unauthorized' });
+    fixture.detectChanges();
+
+    expect(router.navigate).not.toHaveBeenCalled();
+    expect(fixture.nativeElement.querySelector('.error-message')).not.toBeNull();
   });
 });
