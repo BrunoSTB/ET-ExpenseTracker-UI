@@ -15,7 +15,7 @@ describe('ExpensesCardComponent', () => {
   let fixture: ComponentFixture<ExpensesCardComponent>;
   let httpMock: HttpTestingController;
 
-  function monthWith(expenses: Expense[]): ExpenseList {
+  function mockMonthWithExpenses(expenses: Expense[]): ExpenseList {
     return { userId: 1, expensesMonth: 3, totalExpenses: 0, expenses };
   }
 
@@ -41,7 +41,7 @@ describe('ExpensesCardComponent', () => {
 
   it('should expose the expenses of the month it receives', () => {
     const expenses = [new Expense(1, 'Aluguel', 850, new Date())];
-    component.monthExpenses = monthWith(expenses);
+    component.monthExpenses = mockMonthWithExpenses(expenses);
 
     fixture.detectChanges();
 
@@ -85,7 +85,7 @@ describe('ExpensesCardComponent', () => {
     });
 
     it('should add up the expense values', () => {
-      component.monthExpenses = monthWith([
+      component.monthExpenses = mockMonthWithExpenses([
         new Expense(1, 'Aluguel', 850, new Date()),
         new Expense(2, 'Tim', 42.99, new Date()),
       ]);
@@ -95,7 +95,7 @@ describe('ExpensesCardComponent', () => {
     });
 
     it('should round floating point noise to two decimals', () => {
-      component.monthExpenses = monthWith([
+      component.monthExpenses = mockMonthWithExpenses([
         new Expense(1, 'A', 0.1, new Date()),
         new Expense(2, 'B', 0.2, new Date()),
       ]);
@@ -112,7 +112,7 @@ describe('ExpensesCardComponent', () => {
     });
 
     it('should return the highest id in the list', () => {
-      component.monthExpenses = monthWith([
+      component.monthExpenses = mockMonthWithExpenses([
         new Expense(3, 'A', 1, new Date()),
         new Expense(7, 'B', 1, new Date()),
         new Expense(5, 'C', 1, new Date()),
@@ -157,7 +157,7 @@ describe('ExpensesCardComponent', () => {
 
   describe('removeExpense', () => {
     beforeEach(() => {
-      component.monthExpenses = monthWith([
+      component.monthExpenses = mockMonthWithExpenses([
         new Expense(1, 'Aluguel', 850, new Date()),
         new Expense(2, 'Tim', 42.99, new Date()),
       ]);
@@ -206,7 +206,7 @@ describe('ExpensesCardComponent', () => {
 
   describe('clearExpenseList', () => {
     beforeEach(() => {
-      component.monthExpenses = monthWith([
+      component.monthExpenses = mockMonthWithExpenses([
         new Expense(1, 'Aluguel', 850, new Date()),
         new Expense(2, 'Tim', 42.99, new Date()),
       ]);
