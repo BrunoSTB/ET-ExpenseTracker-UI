@@ -48,7 +48,7 @@ describe('UserSignupComponent', () => {
 
     component.onSignupSubmit();
 
-    expect(httpMock.match(environment.apiUri + 'User/Register').length).toBe(0);
+    expect(httpMock.match((r) => r.url === environment.apiUri + 'User/Register').length).toBe(0);
     expect(component.errorMessage).toBeTruthy();
   });
 
