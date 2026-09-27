@@ -16,20 +16,28 @@ export class UserLoginComponent {
     username: '',
     password: ''
   }
+  errorMessage: string | null = null;
+  successMessage: string | null = null;
 
   constructor(private authService: AuthService,
               private sessionService: SessionService,
-              private router: Router) {}
+              private router: Router) {
+    // Vindo do signup, o router carrega o aviso de cadastro concluído.
+    if (this.router.getCurrentNavigation()?.extras.state?.['registered']) {
+      this.successMessage = 'Registration completed! You can now log in.';
+    }
+  }
 
   onSubmit() {
+    this.errorMessage = null;
     this.authService.login(this.credentials)
       .subscribe({
         next: (sessionData) => {
           this.sessionService.saveSession(sessionData);
           this.router.navigate(['/']);
         },
-        error: (error) => {
-          console.error('Login failed:', error);
+        error: () => {
+          this.errorMessage = 'Login failed. Check your username and password.';
         },
       });
   }

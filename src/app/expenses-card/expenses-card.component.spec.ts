@@ -183,6 +183,17 @@ describe('ExpensesCardComponent', () => {
       req.flush({});
     });
 
+    it('should restore the expense and show an error when the API fails', () => {
+      component.removeExpense(1);
+
+      httpMock
+        .expectOne((r) => r.url.includes('DeleteByIds'))
+        .flush(null, { status: 500, statusText: 'Server Error' });
+
+      expect(component.expensesList.map((e) => e.id)).toEqual([1, 2]);
+      expect(component.errorMessage).toBeTruthy();
+    });
+
     // Regressão #5: o id era enviado duas vezes (.set seguido de .append).
     it('should send the id exactly once', () => {
       component.removeExpense(1);
@@ -190,6 +201,39 @@ describe('ExpensesCardComponent', () => {
       const req = httpMock.expectOne((r) => r.url.includes('DeleteByIds'));
       expect(req.request.params.getAll('ids')).toEqual(['1']);
       req.flush({});
+    });
+  });
+
+  describe('clearExpenseList', () => {
+    beforeEach(() => {
+      component.monthExpenses = monthWith([
+        new Expense(1, 'Aluguel', 850, new Date()),
+        new Expense(2, 'Tim', 42.99, new Date()),
+      ]);
+      fixture.detectChanges();
+    });
+
+    it('should clear the list and send every id', () => {
+      component.confirmingClear = true;
+
+      component.clearExpenseList();
+
+      expect(component.expensesList).toEqual([]);
+      expect(component.confirmingClear).toBeFalse();
+      const req = httpMock.expectOne((r) => r.url.includes('DeleteByIds'));
+      expect(req.request.params.getAll('ids')).toEqual(['1', '2']);
+      req.flush({});
+    });
+
+    it('should restore the list and show an error when the API fails', () => {
+      component.clearExpenseList();
+
+      httpMock
+        .expectOne((r) => r.url.includes('DeleteByIds'))
+        .flush(null, { status: 500, statusText: 'Server Error' });
+
+      expect(component.expensesList.map((e) => e.id)).toEqual([1, 2]);
+      expect(component.errorMessage).toBeTruthy();
     });
   });
 });

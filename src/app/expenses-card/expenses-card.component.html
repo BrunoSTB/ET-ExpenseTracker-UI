@@ -2,8 +2,16 @@
     <div class="card-header">
         <button class="card-button" (click)="toggleForm()"><img src="../assets/add-button-18px.png"></button>
         <span class="month-name">{{getCurrentMonth()}}</span>
-        <button class="card-button" (click)="clearExpenseList()"><img src="../assets/deletebutton.png"></button>
+        <button class="card-button" (click)="confirmingClear = true"><img src="../assets/deletebutton.png"></button>
     </div>
+
+    <div class="card-confirm" *ngIf="confirmingClear">
+        <span>Clear all expenses?</span>
+        <button (click)="clearExpenseList()">Yes</button>
+        <button (click)="confirmingClear = false">No</button>
+    </div>
+
+    <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
 
     <div class="card-body">
         <div class="body-header">

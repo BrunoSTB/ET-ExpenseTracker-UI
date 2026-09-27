@@ -18,6 +18,7 @@ export class ExpensesDashboardComponent implements OnInit {
   monthList = this.getFirstDayOfEachMonth();
   yearlyExpenses: ExpenseList[] = [];
   isLoading: boolean = true;
+  errorMessage: string | null = null;
 
   constructor(private expenseService: ExpenseService) {}
 
@@ -41,6 +42,10 @@ export class ExpensesDashboardComponent implements OnInit {
       .subscribe({
         next: (response) => {
           this.yearlyExpenses = response;
+          this.isLoading = false;
+        },
+        error: () => {
+          this.errorMessage = 'Could not load your expenses. Please try again later.';
           this.isLoading = false;
         },
       });
