@@ -22,7 +22,6 @@
 
         <app-expense-form *ngIf="showForm" 
                           (formSubmit)="handleFormSubmit($event)" 
-                          [biggestId]="this.biggestId" 
                           [currentDate]="this.currentDate">
         </app-expense-form>    
         

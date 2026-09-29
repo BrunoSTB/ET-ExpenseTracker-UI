@@ -23,10 +23,8 @@ export class ExpensesCardComponent implements OnInit {
 
   ngOnInit(): void {
       this.expensesList = this.monthExpenses.expenses;
-      this.biggestId = this.getItemWithHighestId();
   }
 
-  biggestId: number = 0;
   showForm: boolean = false;
   confirmingClear: boolean = false;
   errorMessage: string | null = null;
@@ -34,7 +32,6 @@ export class ExpensesCardComponent implements OnInit {
   handleFormSubmit(formData: Expense) {
     if(formData.name.length > 0)
     {
-      this.biggestId = formData.id;
       this.expensesList.push(formData);
     }
     this.toggleForm();
@@ -62,14 +59,6 @@ export class ExpensesCardComponent implements OnInit {
           this.errorMessage = 'Could not clear the expenses.';
         }
       });
-  }
-
-  getItemWithHighestId(): number {
-    if (this.expensesList.length === 0) {
-      return 0;
-    }
-    return this.expensesList
-      .reduce((prev, current) => (prev.id > current.id) ? prev : current).id;
   }
 
   removeExpense(expenseId: number) {

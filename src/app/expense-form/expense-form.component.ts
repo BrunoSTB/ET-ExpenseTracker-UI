@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Expense } from '../types/expenses';
+import { Expense, NewExpense } from '../types/expenses';
 import { FormsModule } from '@angular/forms';
 import { ExpenseService } from '../services/expense.service';
 
@@ -12,7 +12,6 @@ import { ExpenseService } from '../services/expense.service';
 })
 
 export class ExpenseFormComponent {
-  @Input() biggestId: number = 0;
   @Input() currentDate: Date = new Date();
   @Output() formSubmit = new EventEmitter<Expense>();
 
@@ -24,14 +23,15 @@ export class ExpenseFormComponent {
   };
 
   createNewExpense(){
-    let result = new Expense(++this.biggestId,
-                             this.formData.name,
-                             this.formData.value,
-                             this.currentDate);
+    const newExpense: NewExpense = {
+      name: this.formData.name,
+      value: this.formData.value,
+      date: this.currentDate
+    };
 
-    this.expenseService.create(result)
+    this.expenseService.create(newExpense)
       .subscribe({
-        next: () => {this.formSubmit.emit(result);},
+        next: (created) => {this.formSubmit.emit(created);},
         error: (err) => {
           console.error('Error fetching data:', err);
         }
