@@ -73,8 +73,6 @@ describe('SessionService', () => {
     expect(service.getToken()).toBeNull();
   });
 
-  // Regressão #6: saveSession gravava em localStorage enquanto restoreSession
-  // lia de sessionStorage, então a sessão não sobrevivia a um refresh.
   it('should restore the session in a new instance, as happens on a page refresh', () => {
     service.saveSession(aSession);
 
@@ -84,8 +82,6 @@ describe('SessionService', () => {
     expect(afterRefresh.getToken()).toBe(`Bearer ${aSession.accessToken}`);
   });
 
-  // Regressão #6: cleanSession limpava o sessionStorage e deixava o token
-  // no localStorage, então o logout não removia a credencial.
   it('should not restore a session that was cleaned before the refresh', () => {
     service.saveSession(aSession);
     service.cleanSession();

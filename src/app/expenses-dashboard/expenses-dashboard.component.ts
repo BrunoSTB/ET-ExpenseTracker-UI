@@ -12,8 +12,6 @@ import { ExpenseService } from '../services/expense.service';
   styleUrl: './expenses-dashboard.component.css'
 })
 export class ExpensesDashboardComponent implements OnInit {
-  // Uma única fonte para o ano, para que os cards exibidos e a busca na API
-  // nunca divirjam.
   year = new Date().getFullYear();
   monthList = this.getFirstDayOfEachMonth();
   yearlyExpenses: ExpenseList[] = [];

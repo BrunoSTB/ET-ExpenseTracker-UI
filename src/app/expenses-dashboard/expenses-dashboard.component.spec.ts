@@ -29,7 +29,6 @@ describe('ExpensesDashboardComponent', () => {
     httpMock.verify();
   });
 
-  /** Responde à requisição disparada pelo ngOnInit. */
   function flushExpenses(payload: ExpenseList[] = []) {
     fixture.detectChanges();
     httpMock.expectOne((req) => req.url.includes('Expense')).flush(payload);
@@ -41,13 +40,10 @@ describe('ExpensesDashboardComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  // Regressão #7: a query estava fixa em year=2025 enquanto os cards vinham
-  // do ano corrente, então fora de 2025 o dashboard ficava todo zerado.
   it('should query the same year it renders', () => {
     const currentYear = new Date().getFullYear();
     fixture.detectChanges();
 
-    // O ano vai embutido na própria URL, não em HttpParams.
     const req = httpMock.expectOne(
       environment.apiUri + `Expense?year=${currentYear}`
     );
@@ -92,7 +88,6 @@ describe('ExpensesDashboardComponent', () => {
     };
     flushExpenses([march]);
 
-    // getExpensesForMonth recebe o mês 0-indexado; expensesMonth é 1-indexado.
     expect(component.getExpensesForMonth(2)).toBe(march);
   });
 

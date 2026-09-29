@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "../../environments/environment";
-import { Expense } from "../types/expenses";
+import { Expense, NewExpense } from "../types/expenses";
 import { ExpenseList } from "../types/expenseList";
 
 @Injectable({
@@ -16,8 +16,13 @@ export class ExpenseService {
     );
   }
 
-  create(expense: Expense) {
-    return this.http.post(environment.apiUri + "Expense", expense);
+  create(expense: NewExpense) {
+    // TODO: update server API to match expenseDate property name
+    return this.http.post<Expense>(environment.apiUri + "Expense", {
+      name: expense.name,
+      value: expense.value,
+      date: expense.expenseDate,
+    });
   }
 
   deleteByIds(ids: number[]) {

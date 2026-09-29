@@ -22,7 +22,6 @@ export class UserLoginComponent {
   constructor(private authService: AuthService,
               private sessionService: SessionService,
               private router: Router) {
-    // Vindo do signup, o router carrega o aviso de cadastro concluído.
     if (this.router.getCurrentNavigation()?.extras.state?.['registered']) {
       this.successMessage = 'Registration completed! You can now log in.';
     }
