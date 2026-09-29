@@ -1,24 +1,26 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { routes } from './app.routes';
 import { SessionService } from './services/session.service';
+import { LandingPageComponent } from './landing-page/landing-page.component';
 
 describe('app routes', () => {
   let router: Router;
   let sessionService: SessionService;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     localStorage.clear();
 
     TestBed.configureTestingModule({
-      providers: [provideRouter(routes)],
+      providers: [provideRouter(routes), provideHttpClient(), provideHttpClientTesting()],
     });
 
     router = TestBed.inject(Router);
     sessionService = TestBed.inject(SessionService);
-
-    await router.navigateByUrl('/');
   });
 
   afterEach(() => {
@@ -30,8 +32,8 @@ describe('app routes', () => {
   }
 
   describe('/expenses', () => {
-    it('should be blocked without a session', async () => {
-      expect(await router.navigateByUrl('/expenses')).toBeFalse();
+    it('should redirect to the landing page without a session', async () => {
+      await router.navigateByUrl('/expenses');
       expect(router.url).toBe('/');
     });
 
@@ -50,10 +52,10 @@ describe('app routes', () => {
         expect(router.url).toBe(path);
       });
 
-      it('should be blocked when already logged in', async () => {
+      it('should redirect to the landing page when already logged in', async () => {
         logIn();
 
-        expect(await router.navigateByUrl(path)).toBeFalse();
+        await router.navigateByUrl(path);
         expect(router.url).toBe('/');
       });
     });
@@ -71,7 +73,31 @@ describe('app routes', () => {
     sessionService.cleanSession();
     await router.navigateByUrl('/');
 
-    expect(await router.navigateByUrl('/expenses')).toBeFalse();
+    await router.navigateByUrl('/expenses');
+    expect(router.url).toBe('/');
     expect(await router.navigateByUrl('/login')).toBeTrue();
+    expect(router.url).toBe('/login');
+  });
+
+  describe('when a guard blocks the initial navigation', () => {
+    const cases: { path: string; loggedIn: boolean }[] = [
+      { path: '/expenses', loggedIn: false },
+      { path: '/login', loggedIn: true },
+      { path: '/signup', loggedIn: true },
+    ];
+
+    for (const { path, loggedIn } of cases) {
+      it(`should render the landing page for ${path} (logged ${loggedIn ? 'in' : 'out'})`, async () => {
+        if (loggedIn) {
+          logIn();
+        }
+
+        const harness = await RouterTestingHarness.create();
+        await harness.navigateByUrl(path);
+
+        expect(router.url).toBe('/');
+        expect(harness.routeDebugElement?.componentInstance).toBeInstanceOf(LandingPageComponent);
+      });
+    }
   });
 });
