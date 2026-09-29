@@ -39,7 +39,7 @@ describe('UserLoginComponent', () => {
   });
 
   it('should not call the API before the form is submitted', () => {
-    expect(httpMock.match(environment.apiUri + 'User/Login').length).toBe(0);
+    expect(httpMock.match((r) => r.url === environment.apiUri + 'User/Login').length).toBe(0);
   });
 
   it('should post the credentials to the login endpoint on submit', () => {
