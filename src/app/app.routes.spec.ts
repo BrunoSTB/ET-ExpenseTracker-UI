@@ -59,6 +59,11 @@ describe('app routes', () => {
     });
   }
 
+  it('should redirect unknown paths to the landing page', async () => {
+    expect(await router.navigateByUrl('/some/unknown/route')).toBeTrue();
+    expect(router.url).toBe('/');
+  });
+
   it('should follow the session state instead of a snapshot taken at startup', async () => {
     logIn();
     expect(await router.navigateByUrl('/expenses')).toBeTrue();
