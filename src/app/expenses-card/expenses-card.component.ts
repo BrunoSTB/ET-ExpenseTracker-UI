@@ -23,10 +23,10 @@ export class ExpensesCardComponent implements OnInit {
 
   ngOnInit(): void {
       this.expensesList = this.monthExpenses.expenses;
+      this.biggestId = this.getItemWithHighestId();
   }
 
-
-  biggestId = this.getItemWithHighestId();
+  biggestId: number = 0;
   showForm: boolean = false;
   confirmingClear: boolean = false;
   errorMessage: string | null = null;

@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { provideHttpClient } from '@angular/common/http';
 import {
   HttpTestingController,
@@ -6,6 +7,7 @@ import {
 } from '@angular/common/http/testing';
 
 import { ExpensesCardComponent } from './expenses-card.component';
+import { ExpenseFormComponent } from '../expense-form/expense-form.component';
 import { Expense } from '../types/expenses';
 import { ExpenseList } from '../types/expenseList';
 import { environment } from '../../environments/environment';
@@ -120,6 +122,50 @@ describe('ExpensesCardComponent', () => {
       fixture.detectChanges();
 
       expect(component.getItemWithHighestId()).toBe(7);
+    });
+  });
+
+  // Regressão #17: biggestId era inicializado na construção, antes do
+  // ngOnInit preencher a lista, e ficava sempre em 0.
+  describe('biggestId', () => {
+    it('should be 0 for an empty month', () => {
+      fixture.detectChanges();
+      expect(component.biggestId).toBe(0);
+    });
+
+    it('should be the highest id of the month it receives', () => {
+      component.monthExpenses = mockMonthWithExpenses([
+        new Expense(3, 'A', 1, new Date()),
+        new Expense(7, 'B', 1, new Date()),
+        new Expense(5, 'C', 1, new Date()),
+      ]);
+      fixture.detectChanges();
+
+      expect(component.biggestId).toBe(7);
+    });
+
+    it('should give the form an id that is not in the month yet', () => {
+      component.monthExpenses = mockMonthWithExpenses([
+        new Expense(1, 'Aluguel', 850, new Date()),
+        new Expense(7, 'Tim', 42.99, new Date()),
+      ]);
+      fixture.detectChanges();
+      component.toggleForm();
+      fixture.detectChanges();
+
+      const form = fixture.debugElement
+        .query(By.directive(ExpenseFormComponent))
+        .componentInstance as ExpenseFormComponent;
+      form.formData = { name: 'Internet', value: 99.99 };
+      form.createNewExpense();
+
+      const req = httpMock.expectOne(environment.apiUri + 'Expense');
+      expect(req.request.body.id).toBe(8);
+      req.flush({});
+
+      const ids = component.expensesList.map((e) => e.id);
+      expect(ids).toEqual([1, 7, 8]);
+      expect(component.biggestId).toBe(8);
     });
   });
 
