@@ -11,4 +11,5 @@ export const routes: Routes = [
     { path: 'expenses', component: ExpensesDashboardComponent, canActivate: [() => inject(SessionService).isLoggedIn()] }, 
     { path: 'login', component: UserLoginComponent, canActivate: [() => inject(SessionService).isLoggedIn() === false] },
     { path: 'signup', component: UserSignupComponent, canActivate: [() => inject(SessionService).isLoggedIn() === false] },
+    { path: '**', redirectTo: '' },
 ];
