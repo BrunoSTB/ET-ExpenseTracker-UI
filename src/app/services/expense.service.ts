@@ -1,18 +1,8 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable, map } from "rxjs";
 import { environment } from "../../environments/environment";
 import { Expense, NewExpense } from "../types/expenses";
 import { ExpenseList } from "../types/expenseList";
-
-// Formato devolvido pelo POST /Expense: o id é o gerado pelo banco e a data
-// vem como expenseDate.
-interface CreatedExpenseResponse {
-  id: number;
-  name: string;
-  value: number;
-  expenseDate: string;
-}
 
 @Injectable({
   providedIn: "root",
@@ -26,20 +16,14 @@ export class ExpenseService {
     );
   }
 
-  create(expense: NewExpense): Observable<Expense> {
-    return this.http
-      .post<CreatedExpenseResponse>(environment.apiUri + "Expense", expense)
-      .pipe(
-        map(
-          (created) =>
-            new Expense(
-              created.id,
-              created.name,
-              created.value,
-              new Date(created.expenseDate)
-            )
-        )
-      );
+  create(expense: NewExpense) {
+    // O CreateExpenseRequestModel da API recebe a data em "date"; com
+    // "expenseDate" ela gravaria a data padrão (ano 1).
+    return this.http.post<Expense>(environment.apiUri + "Expense", {
+      name: expense.name,
+      value: expense.value,
+      date: expense.expenseDate,
+    });
   }
 
   deleteByIds(ids: number[]) {

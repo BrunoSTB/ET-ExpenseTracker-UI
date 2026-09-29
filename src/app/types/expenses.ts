@@ -1,6 +1,6 @@
 export class Expense {
     id: number;
-    date: Date;
+    expenseDate: Date;
     name: string;
     value: number;
 
@@ -8,41 +8,41 @@ export class Expense {
         this.id = _id;
         this.name = _name;
         this.value = _value;
-        this.date = _date;
+        this.expenseDate = _date;
     }   
 }
 
 // Despesa ainda não gravada: o id é gerado pela API.
-export type NewExpense = Pick<Expense, 'name' | 'value' | 'date'>;
+export type NewExpense = Pick<Expense, 'name' | 'value' | 'expenseDate'>;
 
 export const expenses: Expense[] = [
     {
         id: 1,
-        date: new Date(2024, 2, 4),
+        expenseDate: new Date(2024, 2, 4),
         name: "Aluguel",
         value: 850
     },
     {
         id: 2,
-        date: new Date(2024, 2, 4),
+        expenseDate: new Date(2024, 2, 4),
         name: "Condomínio",
         value: 300
     },
     {
         id: 3,
-        date: new Date(2024, 2, 2),
+        expenseDate: new Date(2024, 2, 2),
         name: "Tim",
         value: 42.99
     },
     {
         id: 4,
-        date: new Date(2024, 2, 11),
+        expenseDate: new Date(2024, 2, 11),
         name: "Internet",
         value: 99.99
     },
     {
         id: 5,
-        date: new Date(2024, 2, 13),
+        expenseDate: new Date(2024, 2, 13),
         name: "Energia",
         value: 155.96
     }

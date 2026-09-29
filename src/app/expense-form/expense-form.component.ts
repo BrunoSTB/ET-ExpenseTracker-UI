@@ -26,7 +26,7 @@ export class ExpenseFormComponent {
     const newExpense: NewExpense = {
       name: this.formData.name,
       value: this.formData.value,
-      date: this.currentDate
+      expenseDate: this.currentDate
     };
 
     this.expenseService.create(newExpense)
