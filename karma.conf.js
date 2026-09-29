@@ -14,10 +14,10 @@ module.exports = function (config) {
     ],
     client: {
       jasmine: {},
-      clearContext: false, // deixa o Jasmine Spec Runner visível no browser
+      clearContext: false,
     },
     jasmineHtmlReporter: {
-      suppressAll: true, // agrupa os traces de falha
+      suppressAll: true,
     },
     coverageReporter: {
       dir: require('path').join(__dirname, './coverage/expense-tracker'),
@@ -27,11 +27,17 @@ module.exports = function (config) {
         { type: 'text-summary' },
         { type: 'lcovonly' },
       ],
+      check: {
+        global: {
+          statements: 90,
+          branches: 80,
+          functions: 90,
+          lines: 90,
+        },
+      },
     },
     reporters: ['progress', 'kjhtml'],
     browsers: ['Chrome'],
-    // Usado pelo script test:ci e pelo GitHub Actions. O --no-sandbox é
-    // obrigatório quando o Chrome roda como root dentro de um container.
     customLaunchers: {
       ChromeHeadlessNoSandbox: {
         base: 'ChromeHeadless',
