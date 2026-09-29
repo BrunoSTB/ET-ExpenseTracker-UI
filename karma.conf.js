@@ -27,6 +27,17 @@ module.exports = function (config) {
         { type: 'text-summary' },
         { type: 'lcovonly' },
       ],
+      // Só vale quando a cobertura é coletada (test:ci / CI). Arquivos que
+      // nenhum spec importa ficam fora do relatório, então todo código novo
+      // precisa de spec para entrar na conta.
+      check: {
+        global: {
+          statements: 90,
+          branches: 80,
+          functions: 90,
+          lines: 90,
+        },
+      },
     },
     reporters: ['progress', 'kjhtml'],
     browsers: ['Chrome'],
