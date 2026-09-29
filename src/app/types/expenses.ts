@@ -12,7 +12,6 @@ export class Expense {
     }   
 }
 
-// Despesa ainda não gravada: o id é gerado pela API.
 export type NewExpense = Pick<Expense, 'name' | 'value' | 'expenseDate'>;
 
 export const expenses: Expense[] = [

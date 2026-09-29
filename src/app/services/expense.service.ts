@@ -17,8 +17,7 @@ export class ExpenseService {
   }
 
   create(expense: NewExpense) {
-    // O CreateExpenseRequestModel da API recebe a data em "date"; com
-    // "expenseDate" ela gravaria a data padrão (ano 1).
+    // TODO: update server API to match expenseDate property name
     return this.http.post<Expense>(environment.apiUri + "Expense", {
       name: expense.name,
       value: expense.value,

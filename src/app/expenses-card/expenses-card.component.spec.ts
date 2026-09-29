@@ -51,10 +51,6 @@ describe('ExpensesCardComponent', () => {
   });
 
   describe('getCurrentMonth', () => {
-    // getCurrentMonth() usa toLocaleString('default'), que resolve pelo locale
-    // do browser: 'March' num runner en-US, 'março' num Windows pt-BR. Cravar a
-    // string quebraria na máquina de quem roda com outro locale, então as
-    // asserções comparam com a formatação equivalente.
     function monthNameOf(date: Date): string {
       return date.toLocaleString('default', { month: 'long' });
     }
@@ -68,8 +64,6 @@ describe('ExpensesCardComponent', () => {
     });
 
     it('should follow the date it receives instead of today', () => {
-      // Seis meses de distância garante um mês diferente do atual em qualquer
-      // época do ano.
       const today = new Date();
       const otherMonth = new Date(today.getFullYear(), (today.getMonth() + 6) % 12, 1);
       component.currentDate = otherMonth;
@@ -107,9 +101,6 @@ describe('ExpensesCardComponent', () => {
     });
   });
 
-  // Regressão #17: a despesa criada ganhava um id calculado na UI (maior id
-  // do mês + 1), que não batia com o gerado pelo banco. Remover essa despesa
-  // mandava para a API um id de outra despesa, ou de nenhuma.
   describe('creating an expense through the form', () => {
     beforeEach(() => {
       component.monthExpenses = mockMonthWithExpenses([
@@ -192,8 +183,6 @@ describe('ExpensesCardComponent', () => {
       httpMock.expectOne((req) => req.url.includes('DeleteByIds')).flush({});
     });
 
-    // Regressão #5: a URL estava fixa em https://localhost:7010, então o
-    // delete individual nunca chegava na API publicada.
     it('should call the configured API, not a hardcoded localhost', () => {
       component.removeExpense(1);
 
@@ -215,7 +204,6 @@ describe('ExpensesCardComponent', () => {
       expect(component.errorMessage).toBeTruthy();
     });
 
-    // Regressão #5: o id era enviado duas vezes (.set seguido de .append).
     it('should send the id exactly once', () => {
       component.removeExpense(1);
 

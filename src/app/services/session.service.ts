@@ -13,7 +13,7 @@ export class SessionService {
     new BehaviorSubject<Session | null>(null);
 
   constructor() {
-    this.restoreSession(); // on page refresh, restore session
+    this.restoreSession();
   }
 
   restoreSession() {
@@ -27,7 +27,6 @@ export class SessionService {
       const sessionData: Session = JSON.parse(sessionJson);
       this.session.next(sessionData);
     } catch {
-      // Conteúdo inválido no storage não deve derrubar o bootstrap do app.
       localStorage.removeItem(SESSION_KEY);
     }
   }
@@ -35,7 +34,7 @@ export class SessionService {
   saveSession(sessionData: Session) {
     localStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
 
-    this.session.next(sessionData); // sends a new value to whomever is listeting to the observable
+    this.session.next(sessionData);
   }
 
   cleanSession() {
@@ -47,7 +46,6 @@ export class SessionService {
     return this.session.asObservable();
   }
 
-  /** Valor pronto para o header Authorization, ou null se não houver sessão. */
   getToken() {
     const accessToken = this.session.value?.accessToken;
 

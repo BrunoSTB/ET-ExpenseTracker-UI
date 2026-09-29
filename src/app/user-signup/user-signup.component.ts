@@ -6,11 +6,11 @@ import { User } from '../types/user';
 
 
 @Component({
-  selector: 'app-user-signup', //  selector, though not used in the provided HTML, is good practice.
+  selector: 'app-user-signup',
   standalone: true,
   imports: [FormsModule],
-  templateUrl: './user-signup.component.html', //  path to the HTML template.
-  styleUrls: ['./user-signup.component.css']    //  path to the CSS stylesheet.
+  templateUrl: './user-signup.component.html',
+  styleUrls: ['./user-signup.component.css']    
 })
 export class UserSignupComponent {
   signupCredentials = {
@@ -27,20 +27,17 @@ export class UserSignupComponent {
   onSignupSubmit() {
     this.errorMessage = null;
 
-    //  basic validation
     if (this.signupCredentials.password !== this.signupCredentials.confirmPassword) {
       this.errorMessage = 'Passwords do not match!';
       return;
     }
 
-    //  confirmPassword é só da UI, não vai para a API.
     const { confirmPassword, ...userInfo } = this.signupCredentials;
     const user: User = userInfo;
 
     this.authService.register(user)
       .subscribe({
         next: () => {
-          //  redirect to login page after successful signup
           this.router.navigate(['/login'], { state: { registered: true } });
         },
         error: () => {
