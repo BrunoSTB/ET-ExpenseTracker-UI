@@ -14,6 +14,8 @@ describe('UserLoginComponent', () => {
   let component: UserLoginComponent;
   let fixture: ComponentFixture<UserLoginComponent>;
   let httpMock: HttpTestingController;
+  let router: Router;
+  let sessionService: SessionService;
 
   beforeEach(async () => {
     localStorage.clear();
@@ -30,6 +32,10 @@ describe('UserLoginComponent', () => {
     fixture = TestBed.createComponent(UserLoginComponent);
     component = fixture.componentInstance;
     httpMock = TestBed.inject(HttpTestingController);
+    router = TestBed.inject(Router);
+    sessionService = TestBed.inject(SessionService);
+    // Os testes verificam a chamada, não a navegação em si.
+    spyOn(router, 'navigate');
     fixture.detectChanges();
   });
 
@@ -61,9 +67,6 @@ describe('UserLoginComponent', () => {
   });
 
   it('should save the session and go home when the login succeeds', () => {
-    const router = TestBed.inject(Router);
-    const sessionService = TestBed.inject(SessionService);
-    spyOn(router, 'navigate');
     component.credentials = { username: 'bruno', password: 'secret' };
 
     component.onSubmit();
@@ -78,7 +81,6 @@ describe('UserLoginComponent', () => {
   });
 
   it('should not save a session when the login fails', () => {
-    const sessionService = TestBed.inject(SessionService);
     component.onSubmit();
 
     httpMock
@@ -103,7 +105,6 @@ describe('UserLoginComponent', () => {
     function createWithNavigationState(state?: Record<string, unknown>) {
       // O componente lê o state da navegação em curso no construtor, então o
       // spy precisa existir antes de criar uma nova instância.
-      const router = TestBed.inject(Router);
       spyOn(router, 'getCurrentNavigation').and.returnValue(
         { extras: { state } } as ReturnType<Router['getCurrentNavigation']>
       );
@@ -131,8 +132,6 @@ describe('UserLoginComponent', () => {
   });
 
   it('should show an error message when the login fails', () => {
-    const router = TestBed.inject(Router);
-    spyOn(router, 'navigate');
     component.onSubmit();
 
     httpMock
