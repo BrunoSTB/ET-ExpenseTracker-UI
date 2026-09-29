@@ -14,10 +14,10 @@ module.exports = function (config) {
     ],
     client: {
       jasmine: {},
-      clearContext: false, // deixa o Jasmine Spec Runner visível no browser
+      clearContext: false,
     },
     jasmineHtmlReporter: {
-      suppressAll: true, // agrupa os traces de falha
+      suppressAll: true,
     },
     coverageReporter: {
       dir: require('path').join(__dirname, './coverage/expense-tracker'),
@@ -27,9 +27,6 @@ module.exports = function (config) {
         { type: 'text-summary' },
         { type: 'lcovonly' },
       ],
-      // Só vale quando a cobertura é coletada (test:ci / CI). Arquivos que
-      // nenhum spec importa ficam fora do relatório, então todo código novo
-      // precisa de spec para entrar na conta.
       check: {
         global: {
           statements: 90,
@@ -41,8 +38,6 @@ module.exports = function (config) {
     },
     reporters: ['progress', 'kjhtml'],
     browsers: ['Chrome'],
-    // Usado pelo script test:ci e pelo GitHub Actions. O --no-sandbox é
-    // obrigatório quando o Chrome roda como root dentro de um container.
     customLaunchers: {
       ChromeHeadlessNoSandbox: {
         base: 'ChromeHeadless',

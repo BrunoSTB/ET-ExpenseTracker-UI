@@ -18,8 +18,6 @@ describe('app routes', () => {
     router = TestBed.inject(Router);
     sessionService = TestBed.inject(SessionService);
 
-    // Ponto de partida comum: sem ele, uma navegação bloqueada deixaria
-    // router.url vazio e as asserções não distinguiriam "ficou" de "foi".
     await router.navigateByUrl('/');
   });
 

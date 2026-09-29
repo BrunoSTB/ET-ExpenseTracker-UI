@@ -34,7 +34,7 @@ describe('UserLoginComponent', () => {
     httpMock = TestBed.inject(HttpTestingController);
     router = TestBed.inject(Router);
     sessionService = TestBed.inject(SessionService);
-    // Os testes verificam a chamada, não a navegação em si.
+
     spyOn(router, 'navigate');
     fixture.detectChanges();
   });
@@ -103,8 +103,6 @@ describe('UserLoginComponent', () => {
 
   describe('registration notice', () => {
     function createWithNavigationState(state?: Record<string, unknown>) {
-      // O componente lê o state da navegação em curso no construtor, então o
-      // spy precisa existir antes de criar uma nova instância.
       spyOn(router, 'getCurrentNavigation').and.returnValue(
         { extras: { state } } as ReturnType<Router['getCurrentNavigation']>
       );
