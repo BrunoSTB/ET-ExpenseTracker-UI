@@ -38,30 +38,30 @@ This will compile your project and store the build artifacts in the `dist/` dire
 
 ## Running unit tests
 
-Para rodar os testes em modo watch, com o browser aberto:
+To run the tests in watch mode, with the browser open:
 
 ```bash
 npm test
 ```
 
-Para rodar uma vez em modo headless, com relatório de cobertura (é o que o CI executa):
+To run them once in headless mode, with a coverage report (this is what CI runs):
 
 ```bash
 npm run test:ci
 ```
 
-O `test:ci` usa o launcher `ChromeHeadlessNoSandbox` definido em `karma.conf.js` — o `--no-sandbox` é
-necessário quando o Chrome roda como root dentro de um container. Se o Karma não encontrar o browser,
-aponte o binário explicitamente:
+`test:ci` uses the `ChromeHeadlessNoSandbox` launcher defined in `karma.conf.js`. The `--no-sandbox` flag is
+required when Chrome runs as root inside a container. If Karma can't find the browser,
+point it to the binary explicitly:
 
 ```bash
 CHROME_BIN=$(which google-chrome) npm run test:ci
 ```
 
-O relatório de cobertura fica em `coverage/expense-tracker/` (HTML e `lcov.info`).
+The coverage report is written to `coverage/expense-tracker/` (HTML and `lcov.info`).
 
-Os testes rodam no GitHub Actions no job `test_job`, que é pré-requisito do job de build e deploy:
-um PR com teste quebrado não chega a ser publicado.
+The tests run on GitHub Actions in the `test_job` job, which the build and deploy job depends on,
+so a PR with a failing test never gets deployed.
 
 ## Running end-to-end tests
 
@@ -75,36 +75,36 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 
 ## Deploy
 
-O deploy é feito automaticamente pelo GitHub Actions (`.github/workflows/azure-static-web-apps.yml`) para o **Azure Static Web Apps**, a cada push ou pull request para a branch `main`. O workflow instala as dependências, gera `src/environments/environment.prod.ts` com a URL da API vinda de um secret e builda o Angular antes de publicar o conteúdo de `dist/expense-tracker/browser`.
+Deployment to **Azure Static Web Apps** is handled automatically by GitHub Actions (`.github/workflows/azure-static-web-apps.yml`) on every push or pull request to the `main` branch. The workflow installs the dependencies, generates `src/environments/environment.prod.ts` with the API URL taken from a secret, and builds the Angular app before publishing the contents of `dist/expense-tracker/browser`.
 
-### Secrets necessários no repositório
+### Required repository secrets
 
-Configure em **Settings → Secrets and variables → Actions**:
+Configure them under **Settings → Secrets and variables → Actions**:
 
-| Secret | Descrição |
+| Secret | Description |
 | --- | --- |
-| `AZURE_STATIC_WEB_APPS_API_TOKEN` | Token de deploy do recurso Azure Static Web Apps |
-| `API_URI` | URL base da API publicada (ex.: `https://expense-tracker-api.proudforest-e65009bc.brazilsouth.azurecontainerapps.io/`) |
+| `AZURE_STATIC_WEB_APPS_API_TOKEN` | Deployment token for the Azure Static Web Apps resource |
+| `API_URI` | Base URL of the deployed API (e.g. `https://expense-tracker-api.proudforest-e65009bc.brazilsouth.azurecontainerapps.io/`) |
 
-### Criando o recurso Azure Static Web Apps
+### Creating the Azure Static Web Apps resource
 
 ```bash
 az staticwebapp create --name et-expense-tracker-ui \
-  --resource-group <resource-group-da-api> \
+  --resource-group <api-resource-group> \
   --location "East US 2" --sku Free
 ```
 
-Regiões suportadas: East US 2, West US 2, Central US, West Europe, East Asia.
+Supported regions: East US 2, West US 2, Central US, West Europe, East Asia.
 
-Para obter o token de deploy (valor do secret `AZURE_STATIC_WEB_APPS_API_TOKEN`):
+To get the deployment token (the value for the `AZURE_STATIC_WEB_APPS_API_TOKEN` secret):
 
 ```bash
 az staticwebapp secrets list --name et-expense-tracker-ui --query "properties.apiKey" -o tsv
 ```
 
-### CORS na API
+### CORS on the API
 
-Após o primeiro deploy, o Azure gera uma URL própria para o site (ex.: `https://xxxxx.azurestaticapps.net`). Adicione essa URL na variável de ambiente `CORSOrigins` das Application Settings do App Service da API e reinicie o serviço, para que a API aceite requisições vindas do front publicado.
+After the first deploy, Azure assigns the site its own URL (e.g. `https://xxxxx.azurestaticapps.net`). Add that URL to the `CORSOrigins` environment variable in the API App Service's Application Settings and restart the service, so the API accepts requests from the deployed front end.
 
 ## Additional Resources
 

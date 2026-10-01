@@ -32,7 +32,7 @@ jobs:
         run: |
           CHROME_BIN="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium-browser || command -v chromium)"
           if [ -z "$CHROME_BIN" ]; then
-            echo "Nenhum binário do Chrome encontrado no runner." >&2
+            echo "No Chrome binary found on the runner." >&2
             exit 1
           fi
           echo "CHROME_BIN=$CHROME_BIN" >> "$GITHUB_ENV"
