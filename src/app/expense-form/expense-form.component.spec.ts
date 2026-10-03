@@ -43,7 +43,7 @@ describe('ExpenseFormComponent', () => {
 
     const req = httpMock.expectOne(environment.apiUri + 'Expense');
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ name: 'Internet', value: 99.9, date });
+    expect(req.request.body).toEqual({ name: 'Internet', value: 99.9, expenseDate: date });
     req.flush({ id: 42, name: 'Internet', value: 99.9, expenseDate: '2026-01-01T00:00:00' });
   });
 

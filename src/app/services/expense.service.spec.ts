@@ -54,7 +54,7 @@ describe('ExpenseService', () => {
       expect(req.request.body).toEqual({
         name: 'Internet',
         value: 99.9,
-        date: new Date(2026, 0, 1),
+        expenseDate: new Date(2026, 0, 1),
       });
       req.flush({ id: 42, name: 'Internet', value: 99.9, expenseDate: '2026-01-01T00:00:00' });
     });

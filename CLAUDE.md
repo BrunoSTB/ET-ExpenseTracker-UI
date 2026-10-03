@@ -23,8 +23,6 @@ The backend is a separate .NET API (Azure Container Apps). All HTTP calls go thr
 
 **Expenses UI**: `ExpensesDashboardComponent` fetches the whole year once (`GET Expense?year=`) as `ExpenseList[]`, one entry per month with a 1-based `expensesMonth`. It renders 12 `ExpensesCardComponent`s, filling months that have no data with empty lists. Each card handles create (`ExpenseFormComponent` emits the new expense) and bulk delete (`DELETE Expense/DeleteByIds?ids=..&ids=..`) for its month.
 
-Known API mismatch: the client model uses `expenseDate`, but the API expects `date` on create. `ExpenseService.create` maps it (marked TODO).
-
 ## Testing conventions
 
 Specs use `TestBed` with `provideHttpClient()` + `provideHttpClientTesting()` and assert requests via `HttpTestingController` (`httpMock.verify()` in `afterEach`). Code that uses `SessionService` touches the real `localStorage`, so specs clear it between tests.
