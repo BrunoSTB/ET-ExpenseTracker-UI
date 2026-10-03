@@ -17,12 +17,7 @@ export class ExpenseService {
   }
 
   create(expense: NewExpense) {
-    // TODO: update server API to match expenseDate property name
-    return this.http.post<Expense>(environment.apiUri + "Expense", {
-      name: expense.name,
-      value: expense.value,
-      date: expense.expenseDate,
-    });
+    return this.http.post<Expense>(environment.apiUri + "Expense", expense);
   }
 
   deleteByIds(ids: number[]) {
