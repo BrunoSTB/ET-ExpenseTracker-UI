@@ -1,42 +1,57 @@
 <div class="card">
-    <div class="card-header">
-        <button class="card-button" (click)="toggleForm()"><img src="../assets/add-button-18px.png"></button>
-        <span class="month-name">{{getCurrentMonth()}}</span>
-        <button class="card-button" (click)="confirmingClear = true"><img src="../assets/deletebutton.png"></button>
+  <div class="card-header">
+    <button class="card-button" (click)="toggleForm()">
+      <img src="../assets/add-button-18px.png" />
+    </button>
+    <span class="month-name">{{ getCurrentMonth() }}</span>
+    <button class="card-button" (click)="confirmingClear = true">
+      <img src="../assets/deletebutton.png" />
+    </button>
+  </div>
+
+  @if (confirmingClear) {
+    <div class="card-confirm">
+      <span>Clear all expenses?</span>
+      <button (click)="clearExpenseList()">Yes</button>
+      <button (click)="confirmingClear = false">No</button>
+    </div>
+  }
+
+  @if (errorMessage) {
+    <p class="error-message">{{ errorMessage }}</p>
+  }
+
+  <div class="card-body">
+    <div class="body-header">
+      <span class="name-column">Expense</span>
+      <span class="value-column">Value</span>
+      <span class="remove-column"></span>
     </div>
 
-    <div class="card-confirm" *ngIf="confirmingClear">
-        <span>Clear all expenses?</span>
-        <button (click)="clearExpenseList()">Yes</button>
-        <button (click)="confirmingClear = false">No</button>
-    </div>
+    @if (showForm) {
+      <app-expense-form
+        (formSubmit)="handleFormSubmit($event)"
+        [currentDate]="this.currentDate"
+      >
+      </app-expense-form>
+    }
 
-    <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+    @for (expense of expensesList; track expense) {
+      <div class="body-content">
+        <span class="name-column">{{ expense.name }}</span>
+        <span class="value-column">{{ expense.value }}</span>
+        <button
+          class="remove-column card-button"
+          (click)="removeExpense(expense.id)"
+        >
+          <img src="../assets/x-button-16px.png" />
+        </button>
+      </div>
+    }
+  </div>
 
-    <div class="card-body">
-        <div class="body-header">
-            <span class="name-column">Expense</span>
-            <span class="value-column">Value</span>
-            <span class="remove-column"></span>
-        </div>
-
-        <app-expense-form *ngIf="showForm" 
-                          (formSubmit)="handleFormSubmit($event)" 
-                          [currentDate]="this.currentDate">
-        </app-expense-form>    
-        
-        <div class="body-content" *ngFor="let expense of expensesList">
-            <span class="name-column">{{ expense.name }}</span>
-            <span class="value-column">{{ expense.value }}</span>
-            <button class="remove-column card-button" (click)="removeExpense(expense.id)">
-                <img src="../assets/x-button-16px.png">
-            </button>
-        </div>
-        
-    </div>
-    
-    <div class="card-footer">
-        <span>Total</span>
-        <span class="total-value">{{ getSum() }}</span>
-    </div>
+  <div class="card-footer">
+    <span>Total</span>
+    <span class="total-value">{{ getSum() }}</span>
+  </div>
 </div>

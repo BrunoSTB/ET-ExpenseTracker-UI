@@ -1,14 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ExpensesCardComponent } from '../expenses-card/expenses-card.component';
-import { NgFor, NgIf } from '@angular/common';
 import { ExpenseList } from '../types/expenseList';
 import { ExpenseService } from '../services/expense.service';
 
 @Component({
   selector: 'app-expenses-dashboard',
   standalone: true,
-  imports: [ExpensesCardComponent, NgFor, NgIf],
+  imports: [ExpensesCardComponent],
   templateUrl: './expenses-dashboard.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './expenses-dashboard.component.css'
 })
 export class ExpensesDashboardComponent implements OnInit {

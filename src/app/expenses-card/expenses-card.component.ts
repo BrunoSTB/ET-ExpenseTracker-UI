@@ -1,6 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Expense } from '../types/expenses'
-import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ExpenseFormComponent } from '../expense-form/expense-form.component';
 import { ExpenseList } from '../types/expenseList';
@@ -9,8 +8,9 @@ import { ExpenseService } from '../services/expense.service';
 @Component({
   selector: 'app-expenses-card',
   standalone: true,
-  imports: [NgFor, NgIf, FormsModule, ExpenseFormComponent],
+  imports: [FormsModule, ExpenseFormComponent],
   templateUrl: './expenses-card.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './expenses-card.component.css'
 })
 

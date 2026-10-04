@@ -1,7 +1,16 @@
-<p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+@if (errorMessage) {
+  <p class="error-message">{{ errorMessage }}</p>
+}
 
-<div class="card-list" *ngIf="!isLoading && !errorMessage">
-    <div  *ngFor="let month of monthList">
-        <app-expenses-card [currentDate]="month" [monthExpenses]="getExpensesForMonth(month.getMonth())"></app-expenses-card>
-    </div>
-</div>
+@if (!isLoading && !errorMessage) {
+  <div class="card-list">
+    @for (month of monthList; track month) {
+      <div>
+        <app-expenses-card
+          [currentDate]="month"
+          [monthExpenses]="getExpensesForMonth(month.getMonth())"
+        ></app-expenses-card>
+      </div>
+    }
+  </div>
+}

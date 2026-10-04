@@ -12,7 +12,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture
 
-Angular 19 SPA with standalone components only (no NgModules), bootstrapped from `src/main.ts` with `src/app/app.config.ts`. Components use classic `@Input`/`@Output`, constructor injection and RxJS subscriptions, not signals. Follow that style.
+Angular 22 SPA with standalone components only (no NgModules), bootstrapped from `src/main.ts` with `src/app/app.config.ts`. Components use classic `@Input`/`@Output`, constructor injection and RxJS subscriptions, not signals. Templates use `@if`/`@for` control flow. Follow that style.
+
+Every component sets `changeDetection: ChangeDetectionStrategy.Eager` because Angular 22 defaults to OnPush and the components mutate fields (e.g. `expensesList.push`, `isLoading`) inside subscriptions. Keep `Eager` on new components unless they are written for OnPush. `app.config.ts` uses `withXhr()` to keep the XHR backend (v22 defaults to fetch).
+
+Angular 22's CLI requires Node >= 22.22.3 or >= 24.15; CI uses Node 24.
 
 The backend is a separate .NET API (Azure Container Apps). All HTTP calls go through `src/app/services/` and build URLs as `environment.apiUri + "<Controller>/<Action>"`, so `apiUri` must keep its trailing slash.
 
