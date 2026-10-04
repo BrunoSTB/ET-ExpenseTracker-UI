@@ -1,4 +1,4 @@
-import { Component, isDevMode } from '@angular/core';
+import { Component, isDevMode, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TopNavbarComponent } from './top-navbar/top-navbar.component';
 import { environment } from '../environments/environment';
@@ -11,6 +11,7 @@ import { environment } from '../environments/environment';
     TopNavbarComponent,
   ],
   templateUrl: './app.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.component.css'
 })
 export class AppComponent {

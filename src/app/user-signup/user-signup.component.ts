@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
@@ -10,6 +10,7 @@ import { User } from '../types/user';
   standalone: true,
   imports: [FormsModule],
   templateUrl: './user-signup.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./user-signup.component.css']    
 })
 export class UserSignupComponent {

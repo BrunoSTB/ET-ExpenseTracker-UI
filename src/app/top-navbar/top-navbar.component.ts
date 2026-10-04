@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLinkActive, RouterLink } from '@angular/router'
 import { Session } from '../types/session';
@@ -10,6 +10,7 @@ import { SessionService } from '../services/session.service';
   standalone: true,
   imports: [CommonModule, RouterLinkActive, RouterLink],
   templateUrl: './top-navbar.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './top-navbar.component.css'
 })
 export class TopNavbarComponent {

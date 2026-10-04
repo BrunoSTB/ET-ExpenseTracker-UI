@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { Expense, NewExpense } from '../types/expenses';
 import { FormsModule } from '@angular/forms';
 import { ExpenseService } from '../services/expense.service';
@@ -8,6 +8,7 @@ import { ExpenseService } from '../services/expense.service';
   standalone: true,
   imports: [FormsModule],
   templateUrl: './expense-form.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './expense-form.component.css'
 })
 

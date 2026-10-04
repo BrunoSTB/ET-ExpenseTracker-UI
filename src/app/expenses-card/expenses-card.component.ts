@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Expense } from '../types/expenses'
 import { FormsModule } from '@angular/forms';
 import { ExpenseFormComponent } from '../expense-form/expense-form.component';
@@ -10,6 +10,7 @@ import { ExpenseService } from '../services/expense.service';
   standalone: true,
   imports: [FormsModule, ExpenseFormComponent],
   templateUrl: './expenses-card.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './expenses-card.component.css'
 })
 
