@@ -12,6 +12,25 @@ ng serve
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
+### Environments
+
+| File | Used by | API |
+| --- | --- | --- |
+| `src/environments/environment.ts` | `ng serve`, `ng test` | `http://localhost:8080/` (local API) |
+| `src/environments/environment.prod.ts` | `ng build` (production configuration) | Production API on Azure Container Apps |
+
+`angular.json` swaps `environment.ts` for `environment.prod.ts` in the production build (`fileReplacements`).
+
+`ng serve` expects the API running locally. In the [server repository](https://github.com/BrunoSTB/ET-ExpenseTracker-Server), run:
+
+```bash
+docker compose up -d --build
+```
+
+That starts PostgreSQL and the API on `http://localhost:8080`, with `CORSOrigins` already set to `http://localhost:4200`. If you run the API another way, point `apiUri` in `environment.ts` at it, keeping the trailing slash.
+
+To run the UI against the production API instead (careful: it reads and writes real data), use `ng serve --configuration production`.
+
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
@@ -75,7 +94,7 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 
 ## Deploy
 
-Deployment to **Azure Static Web Apps** is handled automatically by GitHub Actions (`.github/workflows/azure-static-web-apps.yml`) on every push or pull request to the `main` branch. The workflow installs the dependencies, generates `src/environments/environment.prod.ts` with the API URL taken from a secret, and builds the Angular app before publishing the contents of `dist/expense-tracker/browser`.
+Deployment to **Azure Static Web Apps** is handled automatically by GitHub Actions (`.github/workflows/azure-static-web-apps.yml`) on every push or pull request to the `main` branch. The workflow installs the dependencies, runs the tests and builds the Angular app with the production configuration (which uses the API URL in `src/environments/environment.prod.ts`) before publishing the contents of `dist/expense-tracker/browser`.
 
 ### Required repository secrets
 
@@ -84,7 +103,6 @@ Configure them under **Settings → Secrets and variables → Actions**:
 | Secret | Description |
 | --- | --- |
 | `AZURE_STATIC_WEB_APPS_API_TOKEN` | Deployment token for the Azure Static Web Apps resource |
-| `API_URI` | Base URL of the deployed API (e.g. `https://expense-tracker-api.proudforest-e65009bc.brazilsouth.azurecontainerapps.io/`) |
 
 ### Creating the Azure Static Web Apps resource
 

@@ -35,4 +35,4 @@ Specs use `TestBed` with `provideHttpClient()` + `provideHttpClientTesting()` an
 
 `.github/workflows/azure-static-web-apps.yml` runs on pushes and PRs to `main`. `test_job` (`npm run test:ci`) must pass before `build_and_deploy_job` builds and uploads to Azure Static Web Apps. `public/staticwebapp.config.json` provides the SPA navigation fallback to `index.html`.
 
-Gotcha: CI rewrites `src/environments/environment.prod.ts` from the `API_URI` secret, but `angular.json` has no `fileReplacements`. The build therefore always uses `src/environments/environment.ts`, and the secret currently has no effect. Today both files point to the same production API URL.
+Environments: `src/environments/environment.ts` points to the local API (`http://localhost:8080/`, the server repo's `docker-compose.yml`) and is used by `ng serve` and `ng test`. The production build configuration replaces it with `environment.prod.ts` (`fileReplacements` in `angular.json`), which holds the production API URL. `ng serve --configuration production` runs the UI against the production API.
