@@ -10,9 +10,11 @@ import {
   getMonthTotals,
   getStatus,
   isEstimated,
+  isRemovable,
   sortByDueDate,
 } from './bill-status';
 import { Bill } from '../types/bill';
+import { RecurringBill } from '../types/recurringBill';
 
 // Wednesday, 8 Oct 2026, in the middle of the day.
 const TODAY = new Date(2026, 9, 8, 15, 30);
@@ -403,6 +405,32 @@ describe('bill-status', () => {
       expect(dueDateInMonth(2026, 2, 31)).toBe('2026-02-28');
       expect(dueDateInMonth(2028, 2, 30)).toBe('2028-02-29');
       expect(dueDateInMonth(2026, 4, 31)).toBe('2026-04-30');
+    });
+  });
+
+  describe('isRemovable', () => {
+    const recurringBills: RecurringBill[] = [
+      {
+        id: 3,
+        name: 'Rent',
+        dueDay: 20,
+        amountType: 'Fixed',
+        fixedValue: 100,
+        startMonth: '2026-01-01',
+        endMonth: null,
+      },
+    ];
+
+    it('should allow removing one-off bills', () => {
+      expect(isRemovable(bill(), recurringBills)).toBeTrue();
+    });
+
+    it('should not allow removing bills of an existing recurring bill', () => {
+      expect(isRemovable(bill({ recurringBillId: 3 }), recurringBills)).toBeFalse();
+    });
+
+    it('should allow removing bills of a deleted recurring bill', () => {
+      expect(isRemovable(bill({ recurringBillId: 4 }), recurringBills)).toBeTrue();
     });
   });
 });

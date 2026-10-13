@@ -7,6 +7,7 @@ import {
 
 import { BillRowComponent } from './bill-row.component';
 import { Bill } from '../../types/bill';
+import { RecurringBill } from '../../types/recurringBill';
 import { environment } from '../../../environments/environment';
 import { getTranslocoModule } from '../../../testing/transloco-testing';
 
@@ -48,9 +49,10 @@ describe('BillRowComponent', () => {
     httpMock.verify();
   });
 
-  function render(value: Bill) {
+  function render(value: Bill, recurringBills: RecurringBill[] = []) {
     fixture.componentRef.setInput('bill', value);
     fixture.componentRef.setInput('today', TODAY);
+    fixture.componentRef.setInput('recurringBills', recurringBills);
     fixture.detectChanges();
     return fixture.nativeElement as HTMLElement;
   }
@@ -130,10 +132,35 @@ describe('BillRowComponent', () => {
       fixture.detectChanges();
     }
 
+    const RENT: RecurringBill = {
+      id: 3,
+      name: 'Aluguel',
+      dueDay: 20,
+      amountType: 'Fixed',
+      fixedValue: 1500,
+      startMonth: '2026-01-01',
+      endMonth: null,
+    };
+
     it('should not offer to remove bills of a recurring bill', () => {
-      const element = render(bill());
+      const element = render(bill(), [RENT]);
 
       expect(element.querySelector('.bill-remove')).toBeNull();
+    });
+
+    it('should offer to remove a bill left behind by a deleted recurring bill', () => {
+      const removed: Bill[] = [];
+      fixture.componentInstance.removed.subscribe((value) => removed.push(value));
+      const value = bill({ id: 7, recurringBillId: 3 });
+      const element = render(value, [{ ...RENT, id: 4 }]);
+
+      click(element, '.bill-remove');
+      click(element, '.inline-confirm .confirm');
+      const request = httpMock.expectOne(environment.apiUri + 'Bill/7');
+      expect(request.request.method).toBe('DELETE');
+      request.flush(null);
+
+      expect(removed).toEqual([value]);
     });
 
     it('should confirm inline and delete a one-off bill', () => {

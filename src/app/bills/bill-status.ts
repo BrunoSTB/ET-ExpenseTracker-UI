@@ -1,6 +1,7 @@
 import { parseIsoDate } from "../formatting/format";
 import { Bill } from "../types/bill";
 import { BillMonth } from "../types/billMonth";
+import { RecurringBill } from "../types/recurringBill";
 
 // Status rules for the bills screen. Pure functions that take `today` as a
 // parameter, so specs can pin the date. Texts are returned as translation
@@ -104,6 +105,16 @@ export function getAmount(bill: Bill): number | null {
 // True when the amount shown is an estimate ("~R$ 127,43").
 export function isEstimated(bill: Bill) {
   return bill.value === null && bill.estimate !== null;
+}
+
+// One-off bills can be removed on their own. So can the bills left behind by
+// a deleted recurring bill (its paid bills keep the `recurringBillId`), since
+// there is no recurring bill to remove them with anymore.
+export function isRemovable(bill: Bill, recurringBills: RecurringBill[]) {
+  return (
+    bill.recurringBillId === null ||
+    !recurringBills.some((recurringBill) => recurringBill.id === bill.recurringBillId)
+  );
 }
 
 export function getMonthTotals(bills: Bill[], today: Date): MonthTotals {

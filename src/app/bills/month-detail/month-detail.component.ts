@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Bill } from '../../types/bill';
+import { RecurringBill } from '../../types/recurringBill';
 import { UserPreferences } from '../../types/userPreferences';
 import { DEFAULT_PREFERENCES } from '../../services/preferences.service';
 import { formatDate } from '../../formatting/format';
@@ -41,6 +42,7 @@ export class MonthDetailComponent implements OnChanges {
   // 1-based.
   @Input({ required: true }) month!: number;
   @Input() bills: Bill[] = [];
+  @Input() recurringBills: RecurringBill[] = [];
   @Input({ required: true }) today!: Date;
   @Input() preferences: UserPreferences = DEFAULT_PREFERENCES;
   @Output() previous = new EventEmitter<void>();
