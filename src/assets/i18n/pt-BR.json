@@ -1,0 +1,16 @@
+{
+  "bills": {
+    "status": {
+      "overdue": "Atrasada",
+      "dueSoon": "Vence em breve",
+      "pending": "Pendente",
+      "paid": "Paga",
+      "upcoming": "Próxima"
+    },
+    "amountType": {
+      "Fixed": "Fixo",
+      "VariableEstimated": "Variável",
+      "VariableOnArrival": "Variável"
+    }
+  }
+}

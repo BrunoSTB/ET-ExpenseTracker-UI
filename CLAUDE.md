@@ -25,11 +25,17 @@ The backend is a separate .NET API (Azure Container Apps). All HTTP calls go thr
 - `authInterceptor` (registered in `app.config.ts` via `withInterceptors`) adds `Authorization: Bearer <token>` to every request when a session exists.
 - Route guards in `app.routes.ts` are inline functional guards: `/expenses` requires login, and `/login` and `/signup` require being logged out. Both guards redirect to `/` (landing page) by returning a `UrlTree`. Unknown routes redirect to `/`.
 
+**Bills (v1 redesign, in progress)**: types in `src/app/types/` (`Bill`, `BillMonth`, `RecurringBill`, `AmountType`, `UserPreferences`) mirror the server DTOs. `AmountType` is a string union because the API serializes enums as strings. Dates are ISO `yyyy-MM-dd` strings (server `DateOnly`); parse them with `parseIsoDate`, never `new Date(iso)`, which reads them as UTC and can shift the day. `BillService` (`Bill?year=`, `Bill`, `Bill/{id}/Payment`, `Bill/{id}`) and `RecurringBillService` (`RecurringBill`, `RecurringBill/{id}`) cover the Phase 1 endpoints.
+
+**Formatting and i18n**: the UI language and the number/date format are independent. Texts go through Transloco (`provideAppTransloco()` in `src/app/i18n/transloco.ts`, registered in `app.config.ts`; only `pt-BR`, translations in `src/assets/i18n/<lang>.json`, loaded with an `HttpClient` that skips the interceptors). Currency and dates use `Intl` with the user's `currency`/`locale` from `PreferencesService` (`GET`/`PUT User/Preferences`, defaults `BRL`/`pt-BR`, reset on logout). Use the helpers in `src/app/formatting/format.ts` or the `money` / `localDate` pipes, which take the preferences as an argument (`{{ bill.value | money: preferences }}`) so they stay pure.
+
+**Theme**: `src/styles.css` defines CSS custom properties on `:root` (surfaces, text, the five status colors `--status-*`, `--font-mono`) and a `.money` class for monetary values. Use the tokens instead of hard-coded colors.
+
 **Expenses UI**: `ExpensesDashboardComponent` fetches the whole year once (`GET Expense?year=`) as `ExpenseList[]`, one entry per month with a 1-based `expensesMonth`. It renders 12 `ExpensesCardComponent`s, filling months that have no data with empty lists. Each card handles create (`ExpenseFormComponent` emits the new expense) and bulk delete (`DELETE Expense/DeleteByIds?ids=..&ids=..`) for its month.
 
 ## Testing conventions
 
-Specs use `TestBed` with `provideHttpClient()` + `provideHttpClientTesting()` and assert requests via `HttpTestingController` (`httpMock.verify()` in `afterEach`). Code that uses `SessionService` touches the real `localStorage`, so specs clear it between tests.
+Specs use `TestBed` with `provideHttpClient()` + `provideHttpClientTesting()` and assert requests via `HttpTestingController` (`httpMock.verify()` in `afterEach`). Code that uses `SessionService` touches the real `localStorage`, so specs clear it between tests. Specs of components that use Transloco add `getTranslocoModule()` (from `src/testing/transloco-testing.ts`) to the TestBed `imports`; it loads the real `pt-BR.json` synchronously.
 
 ## Deploy / environments
 
