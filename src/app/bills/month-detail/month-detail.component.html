@@ -47,21 +47,27 @@
 
     <h3 class="section-title">{{ 'bills.month.toPay' | transloco }}</h3>
     @for (bill of toPay; track bill.id) {
-      <app-bill-row class="to-pay" [bill]="bill" [today]="today" [preferences]="preferences"></app-bill-row>
+      <app-bill-row class="to-pay" [bill]="bill" [today]="today" [preferences]="preferences" (removed)="billRemoved.emit($event)"></app-bill-row>
     } @empty {
       <p class="empty">{{ 'bills.month.nothingToPay' | transloco }}</p>
     }
 
     <h3 class="section-title">{{ 'bills.month.paidSection' | transloco }}</h3>
     @for (bill of paid; track bill.id) {
-      <app-bill-row class="paid" [bill]="bill" [today]="today" [preferences]="preferences"></app-bill-row>
+      <app-bill-row class="paid" [bill]="bill" [today]="today" [preferences]="preferences" (removed)="billRemoved.emit($event)"></app-bill-row>
     } @empty {
       <p class="empty">{{ 'bills.month.nothingPaid' | transloco }}</p>
     }
 
-    <footer class="month-footer">
+    <div class="month-total">
       <span>{{ 'bills.month.billsThisMonth' | transloco }}</span>
       <span class="money total-month">{{ totals.total | money: preferences }}</span>
-    </footer>
+    </div>
   }
+
+  <footer class="month-footer">
+    <button type="button" class="add-bill" (click)="addBill.emit()">
+      {{ 'bills.month.addBill' | transloco }}
+    </button>
+  </footer>
 </section>

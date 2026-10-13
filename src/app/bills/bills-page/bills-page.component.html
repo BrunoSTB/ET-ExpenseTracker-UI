@@ -18,21 +18,41 @@
     ></app-month-strip>
 
     <div class="columns">
-      <app-month-detail
-        [year]="year"
-        [month]="selectedMonth"
-        [bills]="selectedBills"
-        [today]="today"
-        [preferences]="preferences"
-        (previous)="previousMonth()"
-        (next)="nextMonth()"
-      ></app-month-detail>
+      <div class="main">
+        <app-month-detail
+          [year]="year"
+          [month]="selectedMonth"
+          [bills]="selectedBills"
+          [today]="today"
+          [preferences]="preferences"
+          (previous)="previousMonth()"
+          (next)="nextMonth()"
+          (addBill)="openAddForm()"
+          (billRemoved)="reload()"
+        ></app-month-detail>
+
+        @if (form) {
+          <app-add-bill-form
+            [year]="year"
+            [month]="selectedMonth"
+            [recurringBill]="form.recurringBill"
+            [preferences]="preferences"
+            (saved)="onFormSaved()"
+            (cancelled)="closeForm()"
+          ></app-add-bill-form>
+        }
+      </div>
 
       <aside class="side">
         <app-recurring-bills-panel
           [recurringBills]="recurringBills"
           [preferences]="preferences"
+          [months]="months"
+          [today]="today"
+          (edit)="openEditForm($event)"
+          (removed)="onRecurringBillRemoved($event)"
         ></app-recurring-bills-panel>
+        <app-preferences-menu></app-preferences-menu>
         <app-status-legend></app-status-legend>
       </aside>
     </div>

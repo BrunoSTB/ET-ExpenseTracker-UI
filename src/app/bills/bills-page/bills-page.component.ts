@@ -11,9 +11,12 @@ import { MonthStripComponent } from '../month-strip/month-strip.component';
 import { MonthDetailComponent } from '../month-detail/month-detail.component';
 import { RecurringBillsPanelComponent } from '../recurring-bills-panel/recurring-bills-panel.component';
 import { StatusLegendComponent } from '../status-legend/status-legend.component';
+import { AddBillFormComponent } from '../add-bill-form/add-bill-form.component';
+import { PreferencesMenuComponent } from '../preferences-menu/preferences-menu.component';
 
-// Container of the bills screen: owns the year, the selected month and the
-// loading state, and passes the data down to the display components.
+// Container of the bills screen: owns the year, the selected month, the
+// loading state and the add/edit form, passes the data down to the other
+// components and reloads after they change something.
 @Component({
   selector: 'app-bills-page',
   standalone: true,
@@ -23,6 +26,8 @@ import { StatusLegendComponent } from '../status-legend/status-legend.component'
     MonthDetailComponent,
     RecurringBillsPanelComponent,
     StatusLegendComponent,
+    AddBillFormComponent,
+    PreferencesMenuComponent,
   ],
   templateUrl: './bills-page.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -40,8 +45,11 @@ export class BillsPageComponent implements OnInit, OnDestroy {
   isLoading = true;
   yearError = false;
   recurringError = false;
+  // Open add/edit form; `recurringBill` is set when editing.
+  form: { recurringBill: RecurringBill | null } | null = null;
 
   private subscriptions = new Subscription();
+  private recurringSubscription?: Subscription;
   private yearSubscription?: Subscription;
 
   constructor(
@@ -60,17 +68,13 @@ export class BillsPageComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.preferencesService.load().subscribe({ error: () => {} })
     );
-    this.subscriptions.add(
-      this.recurringBillService.list().subscribe({
-        next: (recurringBills) => (this.recurringBills = recurringBills),
-        error: () => (this.recurringError = true),
-      })
-    );
+    this.loadRecurringBills();
     this.loadYear();
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    this.recurringSubscription?.unsubscribe();
     this.yearSubscription?.unsubscribe();
   }
 
@@ -102,16 +106,55 @@ export class BillsPageComponent implements OnInit, OnDestroy {
     }
   }
 
+  openAddForm() {
+    this.form = { recurringBill: null };
+  }
+
+  openEditForm(recurringBill: RecurringBill) {
+    this.form = { recurringBill };
+  }
+
+  closeForm() {
+    this.form = null;
+  }
+
+  onFormSaved() {
+    this.form = null;
+    this.reload();
+  }
+
+  onRecurringBillRemoved(recurringBill: RecurringBill) {
+    if (this.form?.recurringBill?.id === recurringBill.id) {
+      this.form = null;
+    }
+    this.reload();
+  }
+
+  // Refreshes the data after a change, keeping the current one on screen.
+  reload() {
+    this.loadRecurringBills();
+    this.loadYear(false);
+  }
+
   private changeYear(year: number, month: number) {
     this.year = year;
     this.selectedMonth = month;
     this.loadYear();
   }
 
-  private loadYear() {
+  private loadRecurringBills() {
+    this.recurringSubscription?.unsubscribe();
+    this.recurringError = false;
+    this.recurringSubscription = this.recurringBillService.list().subscribe({
+      next: (recurringBills) => (this.recurringBills = recurringBills),
+      error: () => (this.recurringError = true),
+    });
+  }
+
+  private loadYear(showLoading = true) {
     // Only the latest year matters when navigating quickly across years.
     this.yearSubscription?.unsubscribe();
-    this.isLoading = true;
+    this.isLoading = showLoading;
     this.yearError = false;
 
     const year = this.year;

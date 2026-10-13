@@ -5,16 +5,51 @@
 }
 
 .recurring-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.6rem 0;
+    padding: 0.4rem 0;
     border-bottom: 1px solid var(--color-border);
 }
 
 .recurring-item:last-child {
     border-bottom: none;
+}
+
+.recurring-main {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* The whole item opens the edit form */
+.recurring-edit {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.3rem;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.recurring-edit:hover {
+    background-color: var(--color-surface-raised);
+}
+
+.recurring-edit:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+.recurring-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
 }
 
 .recurring-name {
@@ -33,6 +68,14 @@
     flex-direction: column;
     align-items: flex-end;
     text-align: right;
+}
+
+.inline-confirm {
+    margin-top: 0.4rem;
+}
+
+.inline-confirm .error-message {
+    text-align: left;
 }
 
 .empty {

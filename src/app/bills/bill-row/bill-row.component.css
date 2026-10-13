@@ -37,3 +37,11 @@
 .bill-status {
     font-weight: bold;
 }
+
+.inline-confirm {
+    margin: 0.4rem 0;
+}
+
+.inline-confirm .error-message {
+    text-align: left;
+}

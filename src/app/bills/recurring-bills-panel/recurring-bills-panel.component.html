@@ -6,27 +6,69 @@
     <ul class="recurring-list">
       @for (recurringBill of recurringBills; track recurringBill.id) {
         <li class="recurring-item">
-          <div>
-            <div class="recurring-name">{{ recurringBill.name }}</div>
-            <div class="recurring-schedule">
-              {{ 'bills.recurring.everyMonth' | transloco: { day: recurringBill.dueDay } }}
+          <div class="recurring-main">
+            <button
+              type="button"
+              class="recurring-edit"
+              [attr.aria-label]="'bills.recurring.edit' | transloco: { name: recurringBill.name }"
+              (click)="edit.emit(recurringBill)"
+            >
+              <span class="recurring-info">
+                <span class="recurring-name">{{ recurringBill.name }}</span>
+                <span class="recurring-schedule">
+                  {{ 'bills.recurring.everyMonth' | transloco: { day: recurringBill.dueDay } }}
+                </span>
+              </span>
+              <span class="recurring-amount">
+                @switch (recurringBill.amountType) {
+                  @case ('Fixed') {
+                    <span class="money">{{ recurringBill.fixedValue | money: preferences }}</span>
+                  }
+                  @case ('VariableEstimated') {
+                    <span>{{ 'bills.recurring.variable' | transloco }}</span>
+                    <span class="hint">{{ 'bills.recurring.estimateHint' | transloco }}</span>
+                  }
+                  @case ('VariableOnArrival') {
+                    <span>{{ 'bills.recurring.variable' | transloco }}</span>
+                    <span class="hint">{{ 'bills.recurring.onArrivalHint' | transloco }}</span>
+                  }
+                }
+              </span>
+            </button>
+            <button
+              type="button"
+              class="icon-button recurring-remove"
+              [attr.aria-label]="'bills.recurring.remove' | transloco: { name: recurringBill.name }"
+              [attr.aria-expanded]="confirmingId === recurringBill.id"
+              (click)="askRemove(recurringBill)"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6" />
+              </svg>
+            </button>
+          </div>
+
+          @if (confirmingId === recurringBill.id && confirmText) {
+            <div class="inline-confirm" role="group">
+              <p class="confirm-text">{{ confirmText.key | transloco: confirmText.params }}</p>
+              @if (removeError) {
+                <p class="error-message" role="alert">{{ 'bills.recurring.removeError' | transloco }}</p>
+              }
+              <div class="actions">
+                <button type="button" class="button cancel" (click)="cancelRemove()">
+                  {{ 'bills.recurring.cancel' | transloco }}
+                </button>
+                <button
+                  type="button"
+                  class="button danger confirm"
+                  [disabled]="isRemoving"
+                  (click)="confirmRemove(recurringBill)"
+                >
+                  {{ 'bills.recurring.confirm' | transloco }}
+                </button>
+              </div>
             </div>
-          </div>
-          <div class="recurring-amount">
-            @switch (recurringBill.amountType) {
-              @case ('Fixed') {
-                <span class="money">{{ recurringBill.fixedValue | money: preferences }}</span>
-              }
-              @case ('VariableEstimated') {
-                <span>{{ 'bills.recurring.variable' | transloco }}</span>
-                <span class="hint">{{ 'bills.recurring.estimateHint' | transloco }}</span>
-              }
-              @case ('VariableOnArrival') {
-                <span>{{ 'bills.recurring.variable' | transloco }}</span>
-                <span class="hint">{{ 'bills.recurring.onArrivalHint' | transloco }}</span>
-              }
-            }
-          </div>
+          }
         </li>
       }
     </ul>

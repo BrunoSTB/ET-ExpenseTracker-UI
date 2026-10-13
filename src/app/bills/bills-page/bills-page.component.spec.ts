@@ -244,4 +244,77 @@ describe('BillsPageComponent', () => {
     expect(text('.month-title')).toBe('October 2026');
     expect(text('app-month-detail .bill-amount')).toBe('$1,234.50');
   });
+
+  describe('actions', () => {
+    function expectReload(billMonths: BillMonth[] = [], recurring: RecurringBill[] = RECURRING) {
+      httpMock.expectOne(environment.apiUri + 'RecurringBill').flush(recurring);
+      expectYear(2026).flush(billMonths);
+      fixture.detectChanges();
+    }
+
+    it('should open the add form from the month footer and reload after saving', () => {
+      init();
+      expect(fixture.nativeElement.querySelector('app-add-bill-form')).toBeNull();
+
+      click('.add-bill');
+      expect(text('app-add-bill-form .panel-title')).toBe('Nova conta');
+
+      component.onFormSaved();
+      fixture.detectChanges();
+      // The data stays on screen while it reloads.
+      expect(fixture.nativeElement.querySelector('.loading')).toBeNull();
+      expectReload([{ month: 10, bills: [bill(1, { name: 'Nova' })] }]);
+
+      expect(fixture.nativeElement.querySelector('app-add-bill-form')).toBeNull();
+      expect(text('app-month-detail .bill-name')).toBe('Nova');
+    });
+
+    it('should close the form on cancel', () => {
+      init();
+      click('.add-bill');
+      click('app-add-bill-form .cancel');
+
+      expect(fixture.nativeElement.querySelector('app-add-bill-form')).toBeNull();
+    });
+
+    it('should open the edit form from the recurring bills panel', () => {
+      init();
+      click('.recurring-edit');
+
+      expect(text('app-add-bill-form .panel-title')).toBe('Editar conta recorrente');
+      expect(component.form?.recurringBill).toEqual(RECURRING[0]);
+    });
+
+    it('should reload after removing a recurring bill and close its edit form', () => {
+      init([{ month: 10, bills: [bill(1, { recurringBillId: 1 })] }]);
+      click('.recurring-edit');
+      click('.recurring-remove');
+      expect(text('.confirm-text')).toContain('A conta não paga a partir de outubro será removida.');
+
+      click('.inline-confirm .confirm');
+      httpMock.expectOne(environment.apiUri + 'RecurringBill/1').flush(null);
+      fixture.detectChanges();
+      expectReload([], []);
+
+      expect(fixture.nativeElement.querySelector('app-add-bill-form')).toBeNull();
+      expect(text('app-recurring-bills-panel .empty')).toBe('Nenhuma conta recorrente.');
+    });
+
+    it('should reload after removing a one-off bill', () => {
+      init([{ month: 10, bills: [bill(5, { name: 'Presente' })] }]);
+      click('.bill-remove');
+      click('.inline-confirm .confirm');
+      httpMock.expectOne(environment.apiUri + 'Bill/5').flush(null);
+      fixture.detectChanges();
+      expectReload([]);
+
+      expect(text('app-month-detail .empty')).toBe('Nenhuma conta neste mês.');
+    });
+
+    it('should render the preferences menu', () => {
+      init();
+
+      expect(text('app-preferences-menu .preferences-toggle')).toContain('Preferências');
+    });
+  });
 });

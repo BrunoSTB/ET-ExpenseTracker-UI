@@ -57,7 +57,8 @@
       "billsThisMonth": "Contas do mês",
       "empty": "Nenhuma conta neste mês.",
       "nothingToPay": "Nada a pagar.",
-      "nothingPaid": "Nenhuma conta paga ainda."
+      "nothingPaid": "Nenhuma conta paga ainda.",
+      "addBill": "+ Adicionar conta"
     },
     "recurring": {
       "title": "Contas recorrentes",
@@ -65,10 +66,67 @@
       "variable": "Variável",
       "estimateHint": "estimativa: últimos 3 meses",
       "onArrivalHint": "informe quando chegar",
-      "empty": "Nenhuma conta recorrente."
+      "empty": "Nenhuma conta recorrente.",
+      "edit": "Editar {{ name }}",
+      "remove": "Parar de acompanhar {{ name }}",
+      "confirmRemove": "Parar de acompanhar {{ name }}? As {{ count }} contas não pagas a partir de {{ month }} serão removidas. Contas pagas e meses anteriores continuam como estão.",
+      "confirmRemoveOne": "Parar de acompanhar {{ name }}? A conta não paga a partir de {{ month }} será removida. Contas pagas e meses anteriores continuam como estão.",
+      "confirmRemoveNone": "Parar de acompanhar {{ name }}? Nenhuma conta não paga a partir de {{ month }} será removida. Contas pagas e meses anteriores continuam como estão.",
+      "confirm": "Remover",
+      "cancel": "Cancelar",
+      "removeError": "Não foi possível remover a conta recorrente."
     },
     "legend": {
       "title": "Legenda"
+    },
+    "row": {
+      "remove": "Remover {{ name }}",
+      "confirmRemove": "Remover esta conta avulsa?",
+      "confirm": "Remover",
+      "cancel": "Cancelar",
+      "removeError": "Não foi possível remover a conta."
+    },
+    "form": {
+      "addTitle": "Nova conta",
+      "editTitle": "Editar conta recorrente",
+      "editNotice": "A mudança vale do mês atual em diante. Contas pagas e meses anteriores não mudam.",
+      "name": "Nome",
+      "dueDay": "Dia do vencimento",
+      "amountType": "Tipo de valor",
+      "amountTypes": {
+        "Fixed": "Valor fixo",
+        "VariableEstimated": "Variável, com estimativa",
+        "VariableOnArrival": "Variável, informado na chegada"
+      },
+      "value": "Valor",
+      "repeats": "Repete todo mês",
+      "oneOffHint": "Desmarcado, a conta é criada só em {{ month }}.",
+      "save": "Salvar",
+      "add": "Adicionar",
+      "cancel": "Cancelar",
+      "errors": {
+        "nameRequired": "Informe o nome.",
+        "dueDayRange": "Informe um dia entre 1 e 31.",
+        "valueRequired": "Informe um valor maior que zero."
+      },
+      "saveError": "Não foi possível salvar a conta. Tente novamente."
     }
+  },
+  "preferences": {
+    "title": "Preferências",
+    "currency": "Moeda",
+    "language": "Idioma",
+    "currencies": {
+      "BRL": "Real (BRL)",
+      "USD": "Dólar americano (USD)",
+      "EUR": "Euro (EUR)",
+      "GBP": "Libra esterlina (GBP)"
+    },
+    "languages": {
+      "pt-BR": "Português (Brasil)"
+    },
+    "save": "Salvar",
+    "saved": "Preferências salvas.",
+    "saveError": "Não foi possível salvar as preferências."
   }
 }

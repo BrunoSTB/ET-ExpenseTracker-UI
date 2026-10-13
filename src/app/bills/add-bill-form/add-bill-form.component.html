@@ -1,0 +1,106 @@
+<section class="panel bill-form">
+  <h2 class="panel-title">
+    {{ (isEditing ? 'bills.form.editTitle' : 'bills.form.addTitle') | transloco }}
+  </h2>
+
+  @if (isEditing) {
+    <p class="notice edit-notice">{{ 'bills.form.editNotice' | transloco }}</p>
+  }
+
+  <form novalidate (ngSubmit)="onSubmit()">
+    <div class="field">
+      <label for="bill-name">{{ 'bills.form.name' | transloco }}</label>
+      <input
+        #nameInput
+        type="text"
+        id="bill-name"
+        name="name"
+        maxlength="100"
+        [(ngModel)]="model.name"
+        (ngModelChange)="onFieldChange()"
+        [attr.aria-invalid]="!!errors.name"
+        [attr.aria-describedby]="errors.name ? 'bill-name-error' : null"
+      />
+      @if (errors.name) {
+        <p class="field-error" id="bill-name-error">{{ errors.name | transloco }}</p>
+      }
+    </div>
+
+    <div class="field">
+      <label for="bill-due-day">{{ 'bills.form.dueDay' | transloco }}</label>
+      <input
+        type="number"
+        id="bill-due-day"
+        name="dueDay"
+        min="1"
+        max="31"
+        step="1"
+        [(ngModel)]="model.dueDay"
+        (ngModelChange)="onFieldChange()"
+        [attr.aria-invalid]="!!errors.dueDay"
+        [attr.aria-describedby]="errors.dueDay ? 'bill-due-day-error' : null"
+      />
+      @if (errors.dueDay) {
+        <p class="field-error" id="bill-due-day-error">{{ errors.dueDay | transloco }}</p>
+      }
+    </div>
+
+    <div class="field">
+      <label for="bill-amount-type">{{ 'bills.form.amountType' | transloco }}</label>
+      <select
+        id="bill-amount-type"
+        name="amountType"
+        [(ngModel)]="model.amountType"
+        (ngModelChange)="onFieldChange()"
+      >
+        @for (amountType of amountTypes; track amountType) {
+          <option [value]="amountType">{{ 'bills.form.amountTypes.' + amountType | transloco }}</option>
+        }
+      </select>
+    </div>
+
+    @if (isFixed) {
+      <div class="field">
+        <label for="bill-value">{{ 'bills.form.value' | transloco }}</label>
+        <input
+          type="number"
+          id="bill-value"
+          name="value"
+          min="0.01"
+          step="0.01"
+          class="money"
+          [(ngModel)]="model.value"
+          (ngModelChange)="onFieldChange()"
+          [attr.aria-invalid]="!!errors.value"
+          [attr.aria-describedby]="errors.value ? 'bill-value-error' : null"
+        />
+        @if (errors.value) {
+          <p class="field-error" id="bill-value-error">{{ errors.value | transloco }}</p>
+        }
+      </div>
+    }
+
+    @if (!isEditing) {
+      <div class="field checkbox-field">
+        <input type="checkbox" id="bill-repeats" name="repeats" [(ngModel)]="model.repeats" />
+        <label for="bill-repeats">{{ 'bills.form.repeats' | transloco }}</label>
+      </div>
+      @if (!model.repeats) {
+        <p class="notice one-off-hint">{{ 'bills.form.oneOffHint' | transloco: { month: monthName } }}</p>
+      }
+    }
+
+    @if (saveError) {
+      <p class="error-message" role="alert">{{ 'bills.form.saveError' | transloco }}</p>
+    }
+
+    <div class="actions">
+      <button type="button" class="button secondary cancel" (click)="cancelled.emit()">
+        {{ 'bills.form.cancel' | transloco }}
+      </button>
+      <button type="submit" class="button primary submit" [disabled]="isSaving">
+        {{ (isEditing ? 'bills.form.save' : 'bills.form.add') | transloco }}
+      </button>
+    </div>
+  </form>
+</section>

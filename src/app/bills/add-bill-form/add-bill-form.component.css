@@ -1,0 +1,31 @@
+.notice {
+    margin: 0 0 0.75rem;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+}
+
+.edit-notice {
+    padding: 0.5rem 0.6rem;
+    border-left: 3px solid var(--status-due-soon);
+    background-color: var(--color-surface-raised);
+    color: var(--color-text);
+}
+
+.checkbox-field {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.checkbox-field label {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--color-text);
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
