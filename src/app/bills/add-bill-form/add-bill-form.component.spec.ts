@@ -153,6 +153,7 @@ describe('AddBillFormComponent', () => {
         dueDay: 10,
         amountType: 'VariableEstimated',
         fixedValue: null,
+        startMonth: '2026-02-01',
       });
       request.flush({});
     });
@@ -162,8 +163,13 @@ describe('AddBillFormComponent', () => {
       type('bill-name', '  Aluguel ');
       type('bill-due-day', '5');
       type('bill-value', '1500.5');
+
+      expect(element().querySelector('.repeats-hint')?.textContent?.trim()).toBe(
+        'A conta se repete todo mês a partir de fevereiro de 2026.'
+      );
       submit();
 
+      // Starts in the open month, even if it is in the past.
       const request = httpMock.expectOne(environment.apiUri + 'RecurringBill');
       expect(request.request.method).toBe('POST');
       expect(request.request.body).toEqual({
@@ -171,6 +177,7 @@ describe('AddBillFormComponent', () => {
         dueDay: 5,
         amountType: 'Fixed',
         fixedValue: 1500.5,
+        startMonth: '2026-02-01',
       });
       expect(element().querySelector<HTMLButtonElement>('.submit')!.disabled).toBeTrue();
       request.flush({ ...RECURRING });
