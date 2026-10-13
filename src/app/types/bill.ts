@@ -13,6 +13,9 @@ export interface Bill {
   // Average of the last 3 paid values; only for VariableEstimated bills.
   estimate: number | null;
   paidAt: string | null;
+  // Whether `DELETE Bill/{id}` accepts it: one-off bills, and bills whose
+  // recurring bill ended by their month (e.g. paid when it was removed).
+  canDelete: boolean;
 }
 
 export interface NewBill {

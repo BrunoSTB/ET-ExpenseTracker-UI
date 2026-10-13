@@ -39,6 +39,7 @@ function bill(id: number, overrides: Partial<Bill> = {}): Bill {
     value: 1500,
     estimate: null,
     paidAt: null,
+    canDelete: false,
     ...overrides,
   };
 }

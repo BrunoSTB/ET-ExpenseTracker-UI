@@ -22,6 +22,7 @@ function bill(id: number, overrides: Partial<Bill> = {}): Bill {
     value: 100,
     estimate: null,
     paidAt: null,
+    canDelete: true,
     ...overrides,
   };
 }
@@ -286,7 +287,7 @@ describe('BillsPageComponent', () => {
     });
 
     it('should reload after removing a recurring bill and close its edit form', () => {
-      init([{ month: 10, bills: [bill(1, { recurringBillId: 1 })] }]);
+      init([{ month: 10, bills: [bill(1, { recurringBillId: 1, canDelete: false })] }]);
       click('.recurring-edit');
       click('.recurring-remove');
       expect(text('.confirm-text')).toContain('A conta não paga a partir de outubro será removida.');

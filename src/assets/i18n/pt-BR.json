@@ -90,7 +90,7 @@
     },
     "row": {
       "remove": "Remover {{ name }}",
-      "confirmRemove": "Remover esta conta avulsa?",
+      "confirmRemove": "Remover esta conta?",
       "confirm": "Remover",
       "cancel": "Cancelar",
       "removeError": "Não foi possível remover a conta."

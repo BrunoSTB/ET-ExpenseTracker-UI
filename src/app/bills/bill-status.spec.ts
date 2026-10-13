@@ -27,6 +27,7 @@ function bill(overrides: Partial<Bill> = {}): Bill {
     value: 100,
     estimate: null,
     paidAt: null,
+    canDelete: true,
     ...overrides,
   };
 }

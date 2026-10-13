@@ -29,7 +29,8 @@ export class BillService {
     return this.http.delete<Bill>(environment.apiUri + `Bill/${id}/Payment`);
   }
 
-  // Only one-off bills can be deleted; the API answers 409 for recurring ones.
+  // Only bills with `canDelete` can be deleted; the API answers 409 for bills
+  // their recurring bill still owns.
   delete(id: number) {
     return this.http.delete<void>(environment.apiUri + `Bill/${id}`);
   }

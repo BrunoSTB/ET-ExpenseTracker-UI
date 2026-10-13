@@ -24,6 +24,7 @@ function bill(overrides: Partial<Bill> = {}): Bill {
     value: 1500,
     estimate: null,
     paidAt: null,
+    canDelete: false,
     ...overrides,
   };
 }
@@ -130,21 +131,27 @@ describe('BillRowComponent', () => {
       fixture.detectChanges();
     }
 
-    it('should not offer to remove bills of a recurring bill', () => {
+    it('should not offer to remove bills of an active recurring bill', () => {
       const element = render(bill());
 
       expect(element.querySelector('.bill-remove')).toBeNull();
     });
 
+    it('should offer to remove a bill of an ended recurring bill', () => {
+      const element = render(bill({ recurringBillId: 3, canDelete: true, paidAt: null }));
+
+      expect(element.querySelector('.bill-remove')).not.toBeNull();
+    });
+
     it('should confirm inline and delete a one-off bill', () => {
       const removed: Bill[] = [];
       fixture.componentInstance.removed.subscribe((value) => removed.push(value));
-      const value = bill({ id: 7, recurringBillId: null, name: 'Presente' });
+      const value = bill({ id: 7, recurringBillId: null, canDelete: true, name: 'Presente' });
       const element = render(value);
 
       expect(element.querySelector('.bill-remove')?.getAttribute('aria-label')).toBe('Remover Presente');
       click(element, '.bill-remove');
-      expect(text(element, '.inline-confirm .confirm-text')).toBe('Remover esta conta avulsa?');
+      expect(text(element, '.inline-confirm .confirm-text')).toBe('Remover esta conta?');
 
       click(element, '.inline-confirm .confirm');
       const request = httpMock.expectOne(environment.apiUri + 'Bill/7');
@@ -157,7 +164,7 @@ describe('BillRowComponent', () => {
     });
 
     it('should cancel without calling the API', () => {
-      const element = render(bill({ recurringBillId: null }));
+      const element = render(bill({ recurringBillId: null, canDelete: true }));
       click(element, '.bill-remove');
       click(element, '.inline-confirm .cancel');
 
@@ -168,7 +175,7 @@ describe('BillRowComponent', () => {
     it('should show an error when the delete fails', () => {
       const removed: Bill[] = [];
       fixture.componentInstance.removed.subscribe((value) => removed.push(value));
-      const element = render(bill({ id: 7, recurringBillId: null }));
+      const element = render(bill({ id: 7, recurringBillId: null, canDelete: true }));
       click(element, '.bill-remove');
       click(element, '.inline-confirm .confirm');
 

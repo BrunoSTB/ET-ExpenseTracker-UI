@@ -23,6 +23,7 @@ describe('BillService', () => {
     value: null,
     estimate: 127.43,
     paidAt: null,
+    canDelete: false,
   };
 
   beforeEach(() => {
@@ -67,7 +68,7 @@ describe('BillService', () => {
       const req = httpMock.expectOne(environment.apiUri + 'Bill');
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual(newBill);
-      req.flush({ ...aBill, id: 42, recurringBillId: null, name: 'IPVA' });
+      req.flush({ ...aBill, id: 42, recurringBillId: null, canDelete: true, name: 'IPVA' });
 
       expect(created).toEqual(
         jasmine.objectContaining({ id: 42, recurringBillId: null })
