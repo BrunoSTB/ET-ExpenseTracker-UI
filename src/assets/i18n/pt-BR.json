@@ -110,6 +110,7 @@
       },
       "value": "Valor",
       "repeats": "Repete todo mês",
+      "repeatsHint": "A conta se repete todo mês a partir de {{ month }}.",
       "oneOffHint": "Desmarcado, a conta é criada só em {{ month }}.",
       "save": "Salvar",
       "add": "Adicionar",

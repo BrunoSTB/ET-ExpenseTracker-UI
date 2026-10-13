@@ -85,7 +85,9 @@
         <input type="checkbox" id="bill-repeats" name="repeats" [(ngModel)]="model.repeats" />
         <label for="bill-repeats">{{ 'bills.form.repeats' | transloco }}</label>
       </div>
-      @if (!model.repeats) {
+      @if (model.repeats) {
+        <p class="notice repeats-hint">{{ 'bills.form.repeatsHint' | transloco: { month: monthName } }}</p>
+      } @else {
         <p class="notice one-off-hint">{{ 'bills.form.oneOffHint' | transloco: { month: monthName } }}</p>
       }
     }

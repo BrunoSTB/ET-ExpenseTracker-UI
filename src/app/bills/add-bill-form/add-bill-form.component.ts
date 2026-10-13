@@ -31,7 +31,7 @@ export interface BillFormErrors {
   value?: string;
 }
 
-// Adds a bill (recurring or one-off in the open month) or, given a
+// Adds a bill (recurring from the open month on, or one-off in the open month) or, given a
 // `recurringBill`, edits it. Emits `saved` after the API call succeeds.
 @Component({
   selector: 'app-add-bill-form',
@@ -42,7 +42,8 @@ export interface BillFormErrors {
   styleUrl: './add-bill-form.component.css'
 })
 export class AddBillFormComponent implements OnChanges, AfterViewInit, OnDestroy {
-  // Year and 1-based month of one-off bills.
+  // Year and 1-based month of one-off bills and of the first month of new
+  // recurring bills.
   @Input({ required: true }) year!: number;
   @Input({ required: true }) month!: number;
   // Edit mode when set.
@@ -173,7 +174,15 @@ export class AddBillFormComponent implements OnChanges, AfterViewInit, OnDestroy
       });
     }
     if (this.model.repeats) {
-      return this.recurringBillService.create({ name, dueDay, amountType, fixedValue: value });
+      // Starts in the open month, so a recurring bill added to a past month
+      // also fills the months up to the current one.
+      return this.recurringBillService.create({
+        name,
+        dueDay,
+        amountType,
+        fixedValue: value,
+        startMonth: dueDateInMonth(this.year, this.month, 1),
+      });
     }
     return this.billService.create({
       name,
