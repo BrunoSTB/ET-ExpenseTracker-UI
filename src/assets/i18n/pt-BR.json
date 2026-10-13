@@ -91,6 +91,7 @@
     "row": {
       "remove": "Remover {{ name }}",
       "confirmRemove": "Remover esta conta avulsa?",
+      "confirmRemoveMonth": "Remover a conta de {{ name }} só deste mês? A conta recorrente continua nos outros meses.",
       "confirm": "Remover",
       "cancel": "Cancelar",
       "removeError": "Não foi possível remover a conta."
