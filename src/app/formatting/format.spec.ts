@@ -4,6 +4,7 @@ import {
   formatMissingCurrency,
   formatMonth,
   parseIsoDate,
+  toIsoDate,
 } from './format';
 import { UserPreferences } from '../types/userPreferences';
 
@@ -22,6 +23,17 @@ describe('format helpers', () => {
       expect(date.getMonth()).toBe(9);
       expect(date.getDate()).toBe(5);
       expect(date.getHours()).toBe(0);
+    });
+  });
+
+  describe('toIsoDate', () => {
+    it('should format the local date as yyyy-MM-dd', () => {
+      expect(toIsoDate(new Date(2026, 0, 5, 23, 30))).toBe('2026-01-05');
+      expect(toIsoDate(new Date(2026, 11, 31))).toBe('2026-12-31');
+    });
+
+    it('should round-trip with parseIsoDate', () => {
+      expect(toIsoDate(parseIsoDate('2026-10-05'))).toBe('2026-10-05');
     });
   });
 

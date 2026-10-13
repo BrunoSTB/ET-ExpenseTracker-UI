@@ -120,4 +120,18 @@ describe('MonthDetailComponent', () => {
     expect(events).toEqual(['previous', 'next']);
     expect(element.querySelector('.nav-button.previous')?.getAttribute('aria-label')).toBe('Mês anterior');
   });
+
+  it('should relay the payment actions of the rows with the bill', () => {
+    const element = render(monthBills());
+    const paid: { id: number; value: number | null }[] = [];
+    const undone: number[] = [];
+    component.pay.subscribe(({ bill, value }) => paid.push({ id: bill.id, value }));
+    component.undoPayment.subscribe((bill) => undone.push(bill.id));
+
+    element.querySelector<HTMLButtonElement>('app-bill-row.to-pay:nth-of-type(2) .pay-toggle')!.click();
+    element.querySelector<HTMLButtonElement>('app-bill-row.paid .pay-toggle')!.click();
+
+    expect(paid).toEqual([{ id: 2, value: null }]);
+    expect(undone).toEqual([1]);
+  });
 });

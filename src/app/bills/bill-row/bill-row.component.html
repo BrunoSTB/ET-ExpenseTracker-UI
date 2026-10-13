@@ -1,23 +1,60 @@
 <div class="bill-row">
-  <span class="status-dot status-{{ status }}" aria-hidden="true"></span>
-  <div class="bill-info">
-    <div class="bill-name">
-      {{ bill.name }}
-      @if (isVariable) {
-        <span class="tag">{{ 'bills.amountType.' + bill.amountType | transloco }}</span>
-      }
-    </div>
-    <div class="bill-due">
-      @if (status === 'paid') {
-        {{ 'bills.due.paid' | transloco: { date: (bill.paidAt | localDate: preferences) } }}
-      } @else {
-        <span class="bill-status">{{ 'bills.status.' + status | transloco }}</span>
-        · {{ 'bills.due.date' | transloco: { date: (bill.dueDate | localDate: preferences) } }}
-        @if (dueText) {
-          · {{ dueText.key | transloco: dueText.params }}
+  <div class="bill-main">
+    <button
+      #toggle
+      type="button"
+      class="pay-toggle status-{{ status }}"
+      [attr.aria-pressed]="isPaid"
+      [attr.aria-label]="(isPaid ? 'bills.payment.undo' : 'bills.payment.markPaid') | transloco: { name: bill.name }"
+      (click)="togglePayment()"
+    >
+      <span class="status-dot status-{{ status }}" aria-hidden="true"></span>
+    </button>
+    <div class="bill-info">
+      <div class="bill-name">
+        {{ bill.name }}
+        @if (isVariable) {
+          <span class="tag">{{ 'bills.amountType.' + bill.amountType | transloco }}</span>
         }
-      }
+      </div>
+      <div class="bill-due">
+        @if (status === 'paid') {
+          {{ 'bills.due.paid' | transloco: { date: (bill.paidAt | localDate: preferences) } }}
+        } @else {
+          <span class="bill-status">{{ 'bills.status.' + status | transloco }}</span>
+          · {{ 'bills.due.date' | transloco: { date: (bill.dueDate | localDate: preferences) } }}
+          @if (dueText) {
+            · {{ dueText.key | transloco: dueText.params }}
+          }
+        }
+      </div>
     </div>
+    <span class="money bill-amount">{{ estimated ? '~' : '' }}{{ amount | money: preferences }}</span>
   </div>
-  <span class="money bill-amount">{{ estimated ? '~' : '' }}{{ amount | money: preferences }}</span>
+
+  @if (isEnteringValue) {
+    <form class="payment-form" (ngSubmit)="confirm()" (keydown.escape)="cancel()">
+      <label class="payment-label" [for]="'payment-value-' + bill.id">
+        {{ 'bills.payment.valueLabel' | transloco }}
+      </label>
+      <input
+        #valueInput
+        type="number"
+        class="money payment-value"
+        name="paymentValue"
+        inputmode="decimal"
+        min="0"
+        step="0.01"
+        required
+        [id]="'payment-value-' + bill.id"
+        [(ngModel)]="paymentValue"
+      />
+      <button type="submit" class="payment-confirm" [disabled]="!canConfirm">
+        {{ 'bills.payment.confirm' | transloco }}
+      </button>
+      <button type="button" class="payment-cancel" (click)="cancel()">
+        {{ 'bills.payment.cancel' | transloco }}
+      </button>
+    </form>
+  }
 </div>
