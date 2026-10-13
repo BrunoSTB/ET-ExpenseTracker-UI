@@ -19,6 +19,7 @@
     align-items: start;
 }
 
+.main,
 .side {
     display: flex;
     flex-direction: column;

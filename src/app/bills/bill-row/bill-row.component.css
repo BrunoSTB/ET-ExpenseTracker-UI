@@ -66,6 +66,15 @@
 }
 
 /* Lines up with the bill name, past the status circle */
+.inline-confirm {
+    margin: 0.5rem 0 0 2.5rem;
+}
+
+.inline-confirm .error-message {
+    text-align: left;
+}
+
+/* Lines up with the bill name, past the status circle */
 .payment-form {
     display: flex;
     flex-wrap: wrap;

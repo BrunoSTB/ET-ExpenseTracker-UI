@@ -1,6 +1,8 @@
 import {
   countOverdueInYear,
+  countUnpaidFromCurrentMonth,
   daysBetween,
+  dueDateInMonth,
   getAmount,
   getDueText,
   getMonthCounts,
@@ -363,6 +365,44 @@ describe('bill-status', () => {
 
       expect(sortByDueDate(bills).map((b) => b.id)).toEqual([2, 3, 1]);
       expect(bills.map((b) => b.id)).toEqual([1, 2, 3]);
+    });
+  });
+
+  describe('countUnpaidFromCurrentMonth', () => {
+    it('should count the unpaid bills of the recurring bill from the current month on', () => {
+      const months = [
+        { month: 9, bills: [bill({ recurringBillId: 3, dueDate: '2026-09-10' })] },
+        {
+          month: 10,
+          bills: [
+            // Overdue but in the current month: removed too.
+            bill({ recurringBillId: 3, dueDate: '2026-10-01' }),
+            bill({ recurringBillId: 3, dueDate: '2026-10-02', paidAt: '2026-10-02' }),
+            bill({ recurringBillId: 4, dueDate: '2026-10-20' }),
+            bill({ recurringBillId: null, dueDate: '2026-10-20' }),
+          ],
+        },
+        { month: 11, bills: [bill({ recurringBillId: 3, dueDate: '2026-11-01' })] },
+      ];
+
+      expect(countUnpaidFromCurrentMonth(months, 3, TODAY)).toBe(2);
+    });
+
+    it('should be zero without months', () => {
+      expect(countUnpaidFromCurrentMonth([], 3, TODAY)).toBe(0);
+    });
+  });
+
+  describe('dueDateInMonth', () => {
+    it('should build an ISO date with padding', () => {
+      expect(dueDateInMonth(2026, 3, 5)).toBe('2026-03-05');
+      expect(dueDateInMonth(2026, 10, 20)).toBe('2026-10-20');
+    });
+
+    it('should use the last day of shorter months', () => {
+      expect(dueDateInMonth(2026, 2, 31)).toBe('2026-02-28');
+      expect(dueDateInMonth(2028, 2, 30)).toBe('2028-02-29');
+      expect(dueDateInMonth(2026, 4, 31)).toBe('2026-04-30');
     });
   });
 });

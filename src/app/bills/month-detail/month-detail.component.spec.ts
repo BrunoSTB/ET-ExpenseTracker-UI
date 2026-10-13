@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { MonthDetailComponent } from './month-detail.component';
 import { Bill } from '../../types/bill';
@@ -29,6 +31,7 @@ describe('MonthDetailComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MonthDetailComponent, getTranslocoModule()],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MonthDetailComponent);
@@ -119,6 +122,29 @@ describe('MonthDetailComponent', () => {
 
     expect(events).toEqual(['previous', 'next']);
     expect(element.querySelector('.nav-button.previous')?.getAttribute('aria-label')).toBe('Mês anterior');
+  });
+
+  it('should offer to add a bill, even in an empty month', () => {
+    let added = 0;
+    component.addBill.subscribe(() => added++);
+    const element = render([]);
+
+    expect(text(element, '.month-footer .add-bill')).toBe('+ Adicionar conta');
+    element.querySelector<HTMLElement>('.add-bill')!.click();
+
+    expect(added).toBe(1);
+  });
+
+  it('should forward the bills removed in a row', () => {
+    const removed: Bill[] = [];
+    component.billRemoved.subscribe((value) => removed.push(value));
+    const value = bill(1);
+    render([value]);
+
+    const row = fixture.debugElement.query((debug) => debug.name === 'app-bill-row');
+    row.componentInstance.removed.emit(value);
+
+    expect(removed).toEqual([value]);
   });
 
   it('should relay the payment actions of the rows with the bill', () => {

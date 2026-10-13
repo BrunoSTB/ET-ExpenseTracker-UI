@@ -81,12 +81,38 @@
     color: var(--color-text-muted);
 }
 
-.month-footer {
+.month-total {
     display: flex;
     justify-content: space-between;
     margin-top: 1rem;
     padding-top: 0.75rem;
     font-weight: bold;
+}
+
+.month-footer {
+    margin-top: 1rem;
+}
+
+/* Dashed "+ Add bill" button */
+.add-bill {
+    width: 100%;
+    padding: 0.6rem;
+    background: none;
+    border: 1px dashed var(--color-border);
+    border-radius: 6px;
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.add-bill:hover {
+    border-color: var(--color-accent);
+    color: var(--color-text);
+}
+
+.add-bill:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
 }
 
 .empty {

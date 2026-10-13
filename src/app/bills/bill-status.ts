@@ -21,7 +21,7 @@ export const DUE_SOON_DAYS = 3;
 
 export interface TranslatedText {
   key: string;
-  params?: Record<string, number>;
+  params?: Record<string, number | string>;
 }
 
 export interface MonthTotals {
@@ -180,4 +180,34 @@ export function sortByDueDate(bills: Bill[]) {
   return [...bills].sort(
     (a, b) => a.dueDate.localeCompare(b.dueDate) || a.name.localeCompare(b.name)
   );
+}
+
+// Unpaid bills of a recurring bill due from the first day of today's month on,
+// i.e. the ones removed when it stops being tracked. Only counts the loaded
+// months.
+export function countUnpaidFromCurrentMonth(
+  months: BillMonth[],
+  recurringBillId: number,
+  today: Date
+) {
+  const firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  return months.reduce(
+    (count, month) =>
+      count +
+      month.bills.filter(
+        (bill) =>
+          bill.recurringBillId === recurringBillId &&
+          !isPaid(bill) &&
+          daysBetween(firstOfMonth, parseIsoDate(bill.dueDate)) >= 0
+      ).length,
+    0
+  );
+}
+
+// ISO due date of a bill in a 1-based month. Months without `dueDay` use their
+// last day, like the server does for recurring bills.
+export function dueDateInMonth(year: number, month: number, dueDay: number) {
+  const lastDay = new Date(year, month, 0).getDate();
+  const day = Math.min(dueDay, lastDay);
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }

@@ -54,6 +54,7 @@
         [preferences]="preferences"
         (pay)="pay.emit({ bill, value: $event })"
         (undoPayment)="undoPayment.emit(bill)"
+        (removed)="billRemoved.emit($event)"
       ></app-bill-row>
     } @empty {
       <p class="empty">{{ 'bills.month.nothingToPay' | transloco }}</p>
@@ -68,14 +69,21 @@
         [preferences]="preferences"
         (pay)="pay.emit({ bill, value: $event })"
         (undoPayment)="undoPayment.emit(bill)"
+        (removed)="billRemoved.emit($event)"
       ></app-bill-row>
     } @empty {
       <p class="empty">{{ 'bills.month.nothingPaid' | transloco }}</p>
     }
 
-    <footer class="month-footer">
+    <div class="month-total">
       <span>{{ 'bills.month.billsThisMonth' | transloco }}</span>
       <span class="money total-month">{{ totals.total | money: preferences }}</span>
-    </footer>
+    </div>
   }
+
+  <footer class="month-footer">
+    <button type="button" class="add-bill" (click)="addBill.emit()">
+      {{ 'bills.month.addBill' | transloco }}
+    </button>
+  </footer>
 </section>

@@ -1,0 +1,30 @@
+.preferences-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0;
+    background: none;
+    border: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.preferences-toggle .panel-title {
+    margin: 0;
+}
+
+.preferences-toggle:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+form {
+    margin-top: 0.75rem;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+}

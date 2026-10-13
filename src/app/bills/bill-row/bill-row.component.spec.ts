@@ -1,7 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import {
+  HttpTestingController,
+  provideHttpClientTesting,
+} from '@angular/common/http/testing';
 
 import { BillRowComponent } from './bill-row.component';
 import { Bill } from '../../types/bill';
+import { environment } from '../../../environments/environment';
 import { getTranslocoModule } from '../../../testing/transloco-testing';
 
 // Intl separates the currency symbol with a non-breaking space.
@@ -25,14 +31,21 @@ function bill(overrides: Partial<Bill> = {}): Bill {
 describe('BillRowComponent', () => {
   let component: BillRowComponent;
   let fixture: ComponentFixture<BillRowComponent>;
+  let httpMock: HttpTestingController;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [BillRowComponent, getTranslocoModule()],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BillRowComponent);
     component = fixture.componentInstance;
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpMock.verify();
   });
 
   function render(value: Bill) {
@@ -109,6 +122,62 @@ describe('BillRowComponent', () => {
     const element = render(bill({ paidAt: '2026-10-08' }));
 
     expect(element.querySelector('.status-dot')?.classList).toContain('status-paid');
+  });
+
+  describe('removing', () => {
+    function click(element: HTMLElement, selector: string) {
+      element.querySelector<HTMLElement>(selector)!.click();
+      fixture.detectChanges();
+    }
+
+    it('should not offer to remove bills of a recurring bill', () => {
+      const element = render(bill());
+
+      expect(element.querySelector('.bill-remove')).toBeNull();
+    });
+
+    it('should confirm inline and delete a one-off bill', () => {
+      const removed: Bill[] = [];
+      fixture.componentInstance.removed.subscribe((value) => removed.push(value));
+      const value = bill({ id: 7, recurringBillId: null, name: 'Presente' });
+      const element = render(value);
+
+      expect(element.querySelector('.bill-remove')?.getAttribute('aria-label')).toBe('Remover Presente');
+      click(element, '.bill-remove');
+      expect(text(element, '.inline-confirm .confirm-text')).toBe('Remover esta conta avulsa?');
+
+      click(element, '.inline-confirm .confirm');
+      const request = httpMock.expectOne(environment.apiUri + 'Bill/7');
+      expect(request.request.method).toBe('DELETE');
+      request.flush(null);
+      fixture.detectChanges();
+
+      expect(removed).toEqual([value]);
+      expect(element.querySelector('.inline-confirm')).toBeNull();
+    });
+
+    it('should cancel without calling the API', () => {
+      const element = render(bill({ recurringBillId: null }));
+      click(element, '.bill-remove');
+      click(element, '.inline-confirm .cancel');
+
+      expect(element.querySelector('.inline-confirm')).toBeNull();
+      httpMock.expectNone(() => true);
+    });
+
+    it('should show an error when the delete fails', () => {
+      const removed: Bill[] = [];
+      fixture.componentInstance.removed.subscribe((value) => removed.push(value));
+      const element = render(bill({ id: 7, recurringBillId: null }));
+      click(element, '.bill-remove');
+      click(element, '.inline-confirm .confirm');
+
+      httpMock.expectOne(environment.apiUri + 'Bill/7').flush(null, { status: 409, statusText: 'Conflict' });
+      fixture.detectChanges();
+
+      expect(removed).toEqual([]);
+      expect(text(element, '.inline-confirm .error-message')).toBe('Não foi possível remover a conta.');
+    });
   });
 
   describe('payment', () => {

@@ -30,6 +30,19 @@
       </div>
     </div>
     <span class="money bill-amount">{{ estimated ? '~' : '' }}{{ amount | money: preferences }}</span>
+    @if (isOneOff) {
+      <button
+        type="button"
+        class="icon-button bill-remove"
+        [attr.aria-label]="'bills.row.remove' | transloco: { name: bill.name }"
+        [attr.aria-expanded]="isConfirmingRemove"
+        (click)="askRemove()"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6" />
+        </svg>
+      </button>
+    }
   </div>
 
   @if (isEnteringValue) {
@@ -56,5 +69,22 @@
         {{ 'bills.payment.cancel' | transloco }}
       </button>
     </form>
+  }
+
+  @if (isConfirmingRemove) {
+    <div class="inline-confirm" role="group">
+      <p class="confirm-text">{{ 'bills.row.confirmRemove' | transloco }}</p>
+      @if (removeError) {
+        <p class="error-message" role="alert">{{ 'bills.row.removeError' | transloco }}</p>
+      }
+      <div class="actions">
+        <button type="button" class="button cancel" (click)="cancelRemove()">
+          {{ 'bills.row.cancel' | transloco }}
+        </button>
+        <button type="button" class="button danger confirm" [disabled]="isRemoving" (click)="confirmRemove()">
+          {{ 'bills.row.confirm' | transloco }}
+        </button>
+      </div>
+    </div>
   }
 </div>

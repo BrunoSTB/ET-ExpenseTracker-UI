@@ -1,0 +1,47 @@
+<section class="panel preferences">
+  <button
+    type="button"
+    class="preferences-toggle"
+    aria-controls="preferences-form"
+    [attr.aria-expanded]="isOpen"
+    (click)="toggle()"
+  >
+    <span class="panel-title">{{ 'preferences.title' | transloco }}</span>
+    <span class="chevron" aria-hidden="true">{{ isOpen ? '▴' : '▾' }}</span>
+  </button>
+
+  @if (isOpen) {
+    <form id="preferences-form" (ngSubmit)="onSubmit()">
+      <div class="field">
+        <label for="preferences-currency">{{ 'preferences.currency' | transloco }}</label>
+        <select id="preferences-currency" name="currency" [(ngModel)]="model.currency">
+          @for (currency of currencies; track currency) {
+            <option [value]="currency">{{ 'preferences.currencies.' + currency | transloco }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="preferences-language">{{ 'preferences.language' | transloco }}</label>
+        <select id="preferences-language" name="locale" [(ngModel)]="model.locale">
+          @for (language of languages; track language) {
+            <option [value]="language">{{ 'preferences.languages.' + language | transloco }}</option>
+          }
+        </select>
+      </div>
+
+      @if (saved) {
+        <p class="success-message" role="status">{{ 'preferences.saved' | transloco }}</p>
+      }
+      @if (saveError) {
+        <p class="error-message" role="alert">{{ 'preferences.saveError' | transloco }}</p>
+      }
+
+      <div class="actions">
+        <button type="submit" class="button primary submit" [disabled]="isSaving">
+          {{ 'preferences.save' | transloco }}
+        </button>
+      </div>
+    </form>
+  }
+</section>

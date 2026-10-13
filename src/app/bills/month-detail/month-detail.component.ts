@@ -45,6 +45,8 @@ export class MonthDetailComponent implements OnChanges {
   @Input() preferences: UserPreferences = DEFAULT_PREFERENCES;
   @Output() previous = new EventEmitter<void>();
   @Output() next = new EventEmitter<void>();
+  @Output() addBill = new EventEmitter<void>();
+  @Output() billRemoved = new EventEmitter<Bill>();
   @Output() pay = new EventEmitter<BillPaymentEvent>();
   @Output() undoPayment = new EventEmitter<Bill>();
 
