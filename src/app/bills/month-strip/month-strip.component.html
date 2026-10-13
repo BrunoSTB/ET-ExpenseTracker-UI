@@ -1,0 +1,34 @@
+<section class="strip" [attr.aria-label]="'bills.strip.label' | transloco: { year }">
+  <div class="strip-header">
+    <h2 class="strip-year">{{ year }}</h2>
+    @if (overdueThisYear > 0) {
+      <span class="overdue-year">
+        <span class="status-dot status-overdue" aria-hidden="true"></span>
+        @if (overdueThisYear === 1) {
+          {{ 'bills.strip.overdueThisYearOne' | transloco }}
+        } @else {
+          {{ 'bills.strip.overdueThisYear' | transloco: { count: overdueThisYear } }}
+        }
+      </span>
+    }
+  </div>
+  <div class="months">
+    @for (card of cards; track card.month) {
+      <button
+        type="button"
+        class="month-card"
+        [class.selected]="card.month === selectedMonth"
+        [attr.aria-pressed]="card.month === selectedMonth"
+        (click)="select(card.month)"
+      >
+        <span class="month-name">{{ card.name }}</span>
+        <span class="dots" aria-hidden="true">
+          @for (dot of card.dots; track dot.id) {
+            <span class="status-dot status-{{ dot.status }}"></span>
+          }
+        </span>
+        <span class="month-summary">{{ card.summary.key | transloco: card.summary.params }}</span>
+      </button>
+    }
+  </div>
+</section>

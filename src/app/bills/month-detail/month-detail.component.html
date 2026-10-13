@@ -1,0 +1,67 @@
+<section class="panel month-detail">
+  <header class="month-header">
+    <button
+      type="button"
+      class="nav-button previous"
+      [attr.aria-label]="'bills.month.previous' | transloco"
+      (click)="previous.emit()"
+    >‹</button>
+    <h2 class="month-title">{{ title }}</h2>
+    <button
+      type="button"
+      class="nav-button next"
+      [attr.aria-label]="'bills.month.next' | transloco"
+      (click)="next.emit()"
+    >›</button>
+  </header>
+
+  @if (counts.total === 0) {
+    <p class="empty">{{ 'bills.month.empty' | transloco }}</p>
+  } @else {
+    <p class="paid-count">
+      {{ 'bills.month.paidCount' | transloco: { paid: counts.paid, total: counts.total } }}
+    </p>
+    <div
+      class="progress"
+      role="img"
+      [attr.aria-label]="'bills.month.progress' | transloco"
+    >
+      <span class="progress-segment status-paid" [style.width.%]="progress.paid"></span>
+      <span class="progress-segment status-overdue" [style.width.%]="progress.overdue"></span>
+    </div>
+
+    <dl class="totals">
+      <div class="total">
+        <dt>{{ 'bills.month.paid' | transloco }}</dt>
+        <dd class="money total-paid">{{ totals.paid | money: preferences }}</dd>
+      </div>
+      <div class="total">
+        <dt>{{ 'bills.month.leftToPay' | transloco }}</dt>
+        <dd class="money total-left">{{ totals.leftToPay | money: preferences }}</dd>
+      </div>
+      <div class="total">
+        <dt>{{ 'bills.month.overdue' | transloco }}</dt>
+        <dd class="money total-overdue">{{ totals.overdue | money: preferences }}</dd>
+      </div>
+    </dl>
+
+    <h3 class="section-title">{{ 'bills.month.toPay' | transloco }}</h3>
+    @for (bill of toPay; track bill.id) {
+      <app-bill-row class="to-pay" [bill]="bill" [today]="today" [preferences]="preferences"></app-bill-row>
+    } @empty {
+      <p class="empty">{{ 'bills.month.nothingToPay' | transloco }}</p>
+    }
+
+    <h3 class="section-title">{{ 'bills.month.paidSection' | transloco }}</h3>
+    @for (bill of paid; track bill.id) {
+      <app-bill-row class="paid" [bill]="bill" [today]="today" [preferences]="preferences"></app-bill-row>
+    } @empty {
+      <p class="empty">{{ 'bills.month.nothingPaid' | transloco }}</p>
+    }
+
+    <footer class="month-footer">
+      <span>{{ 'bills.month.billsThisMonth' | transloco }}</span>
+      <span class="money total-month">{{ totals.total | money: preferences }}</span>
+    </footer>
+  }
+</section>
