@@ -1,0 +1,23 @@
+<div class="bill-row">
+  <span class="status-dot status-{{ status }}" aria-hidden="true"></span>
+  <div class="bill-info">
+    <div class="bill-name">
+      {{ bill.name }}
+      @if (isVariable) {
+        <span class="tag">{{ 'bills.amountType.' + bill.amountType | transloco }}</span>
+      }
+    </div>
+    <div class="bill-due">
+      @if (status === 'paid') {
+        {{ 'bills.due.paid' | transloco: { date: (bill.paidAt | localDate: preferences) } }}
+      } @else {
+        <span class="bill-status">{{ 'bills.status.' + status | transloco }}</span>
+        · {{ 'bills.due.date' | transloco: { date: (bill.dueDate | localDate: preferences) } }}
+        @if (dueText) {
+          · {{ dueText.key | transloco: dueText.params }}
+        }
+      }
+    </div>
+  </div>
+  <span class="money bill-amount">{{ estimated ? '~' : '' }}{{ amount | money: preferences }}</span>
+</div>

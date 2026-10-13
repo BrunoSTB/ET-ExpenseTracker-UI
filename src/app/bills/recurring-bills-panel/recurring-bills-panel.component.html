@@ -1,0 +1,34 @@
+<section class="panel">
+  <h2 class="panel-title">{{ 'bills.recurring.title' | transloco }}</h2>
+  @if (recurringBills.length === 0) {
+    <p class="empty">{{ 'bills.recurring.empty' | transloco }}</p>
+  } @else {
+    <ul class="recurring-list">
+      @for (recurringBill of recurringBills; track recurringBill.id) {
+        <li class="recurring-item">
+          <div>
+            <div class="recurring-name">{{ recurringBill.name }}</div>
+            <div class="recurring-schedule">
+              {{ 'bills.recurring.everyMonth' | transloco: { day: recurringBill.dueDay } }}
+            </div>
+          </div>
+          <div class="recurring-amount">
+            @switch (recurringBill.amountType) {
+              @case ('Fixed') {
+                <span class="money">{{ recurringBill.fixedValue | money: preferences }}</span>
+              }
+              @case ('VariableEstimated') {
+                <span>{{ 'bills.recurring.variable' | transloco }}</span>
+                <span class="hint">{{ 'bills.recurring.estimateHint' | transloco }}</span>
+              }
+              @case ('VariableOnArrival') {
+                <span>{{ 'bills.recurring.variable' | transloco }}</span>
+                <span class="hint">{{ 'bills.recurring.onArrivalHint' | transloco }}</span>
+              }
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>

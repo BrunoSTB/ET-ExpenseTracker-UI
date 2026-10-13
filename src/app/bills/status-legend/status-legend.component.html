@@ -1,0 +1,14 @@
+<section class="panel">
+  <h2 class="panel-title">{{ 'bills.legend.title' | transloco }}</h2>
+  <ul class="legend">
+    @for (status of statuses; track status) {
+      <li class="legend-item">
+        <span class="status-dot status-{{ status }}" aria-hidden="true"></span>
+        <span>
+          <span class="legend-label">{{ 'bills.status.' + status | transloco }}</span>
+          <span class="legend-description">{{ 'bills.statusDescription.' + status | transloco }}</span>
+        </span>
+      </li>
+    }
+  </ul>
+</section>

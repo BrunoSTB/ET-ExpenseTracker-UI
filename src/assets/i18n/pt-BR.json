@@ -1,5 +1,8 @@
 {
   "bills": {
+    "title": "Contas",
+    "loading": "Carregando contas…",
+    "loadError": "Não foi possível carregar suas contas. Tente novamente mais tarde.",
     "status": {
       "overdue": "Atrasada",
       "dueSoon": "Vence em breve",
@@ -7,10 +10,65 @@
       "paid": "Paga",
       "upcoming": "Próxima"
     },
+    "statusDescription": {
+      "overdue": "O vencimento passou e a conta não foi paga",
+      "dueSoon": "Vence nos próximos 3 dias",
+      "pending": "Vence mais adiante no mês",
+      "paid": "Conta paga",
+      "upcoming": "Conta de um mês futuro"
+    },
     "amountType": {
       "Fixed": "Fixo",
       "VariableEstimated": "Variável",
       "VariableOnArrival": "Variável"
+    },
+    "due": {
+      "date": "Vence {{ date }}",
+      "paid": "Paga {{ date }}",
+      "late": "{{ days }} dias de atraso",
+      "lateOne": "1 dia de atraso",
+      "today": "vence hoje",
+      "tomorrow": "vence amanhã",
+      "inDays": "em {{ days }} dias"
+    },
+    "summary": {
+      "empty": "Sem contas",
+      "allPaid": "Tudo pago",
+      "overdue": "{{ count }} atrasadas",
+      "overdueOne": "1 atrasada",
+      "bills": "{{ count }} contas",
+      "billsOne": "1 conta"
+    },
+    "strip": {
+      "label": "Meses de {{ year }}",
+      "overdueThisYear": "{{ count }} atrasadas este ano",
+      "overdueThisYearOne": "1 atrasada este ano"
+    },
+    "month": {
+      "previous": "Mês anterior",
+      "next": "Próximo mês",
+      "paidCount": "{{ paid }} de {{ total }} contas pagas",
+      "progress": "Progresso dos pagamentos do mês",
+      "paid": "Pago",
+      "leftToPay": "Falta pagar",
+      "overdue": "Atrasado",
+      "toPay": "A pagar",
+      "paidSection": "Pagas",
+      "billsThisMonth": "Contas do mês",
+      "empty": "Nenhuma conta neste mês.",
+      "nothingToPay": "Nada a pagar.",
+      "nothingPaid": "Nenhuma conta paga ainda."
+    },
+    "recurring": {
+      "title": "Contas recorrentes",
+      "everyMonth": "Todo mês no dia {{ day }}",
+      "variable": "Variável",
+      "estimateHint": "estimativa: últimos 3 meses",
+      "onArrivalHint": "informe quando chegar",
+      "empty": "Nenhuma conta recorrente."
+    },
+    "legend": {
+      "title": "Legenda"
     }
   }
 }

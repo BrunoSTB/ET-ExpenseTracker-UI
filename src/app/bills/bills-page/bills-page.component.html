@@ -1,0 +1,40 @@
+<div class="bills-page">
+  <h1 class="visually-hidden">{{ 'bills.title' | transloco }}</h1>
+
+  @if (hasError) {
+    <p class="error-message" role="alert">{{ 'bills.loadError' | transloco }}</p>
+  }
+
+  @if (isLoading) {
+    <p class="loading" role="status">{{ 'bills.loading' | transloco }}</p>
+  } @else {
+    <app-month-strip
+      [year]="year"
+      [months]="months"
+      [selectedMonth]="selectedMonth"
+      [today]="today"
+      [preferences]="preferences"
+      (monthSelected)="selectMonth($event)"
+    ></app-month-strip>
+
+    <div class="columns">
+      <app-month-detail
+        [year]="year"
+        [month]="selectedMonth"
+        [bills]="selectedBills"
+        [today]="today"
+        [preferences]="preferences"
+        (previous)="previousMonth()"
+        (next)="nextMonth()"
+      ></app-month-detail>
+
+      <aside class="side">
+        <app-recurring-bills-panel
+          [recurringBills]="recurringBills"
+          [preferences]="preferences"
+        ></app-recurring-bills-panel>
+        <app-status-legend></app-status-legend>
+      </aside>
+    </div>
+  }
+</div>

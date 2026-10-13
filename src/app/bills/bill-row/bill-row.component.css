@@ -1,0 +1,39 @@
+.bill-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+}
+
+.bill-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.bill-name {
+    font-weight: bold;
+    overflow-wrap: anywhere;
+}
+
+.tag {
+    margin-left: 0.4rem;
+    padding: 0.05rem 0.35rem;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: normal;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+}
+
+.bill-due {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+}
+
+.bill-status {
+    font-weight: bold;
+}
