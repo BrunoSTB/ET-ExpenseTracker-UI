@@ -1,7 +1,40 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Theme tokens. Use these instead of hard-coded colors in component styles. */
+:root {
+    /* Surfaces, from the page background up to raised elements */
+    --color-bg: #17181F;
+    --color-surface: #21242C;
+    --color-surface-raised: #2A2E38;
+    --color-border: #3A3A3E;
+
+    /* Text */
+    --color-text: #F5F5F5;
+    --color-text-muted: #A3A7B3;
+    --color-accent: #007BFF;
+
+    /* Bill status (always paired with a text label, never color alone) */
+    --status-overdue: #E5484D;
+    --status-due-soon: #F5C542;
+    --status-pending: #9BA1AE;
+    --status-paid: #3DB37A;
+    --status-upcoming: #4B5161;
+
+    /* Typography */
+    --font-sans: sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
 body {
-    background-color: #17181F;
-    font-family: sans-serif;
+    background-color: var(--color-bg);
+    font-family: var(--font-sans);
+}
+
+/* Monetary values: monospaced with aligned digits */
+.money {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
 }
 
 .al-left {
