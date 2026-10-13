@@ -130,10 +130,32 @@ describe('BillRowComponent', () => {
       fixture.detectChanges();
     }
 
-    it('should not offer to remove bills of a recurring bill', () => {
-      const element = render(bill());
+    it('should confirm inline and skip the month of a recurring bill', () => {
+      const removed: Bill[] = [];
+      fixture.componentInstance.removed.subscribe((value) => removed.push(value));
+      const value = bill({ id: 9, recurringBillId: 3, name: 'Aluguel' });
+      const element = render(value);
 
-      expect(element.querySelector('.bill-remove')).toBeNull();
+      expect(element.querySelector('.bill-remove')?.getAttribute('aria-label')).toBe('Remover Aluguel');
+      click(element, '.bill-remove');
+      expect(text(element, '.inline-confirm .confirm-text')).toBe(
+        'Remover a conta de Aluguel só deste mês? A conta recorrente continua nos outros meses.'
+      );
+
+      click(element, '.inline-confirm .confirm');
+      const request = httpMock.expectOne(environment.apiUri + 'Bill/9');
+      expect(request.request.method).toBe('DELETE');
+      request.flush(null);
+      fixture.detectChanges();
+
+      expect(removed).toEqual([value]);
+      expect(element.querySelector('.inline-confirm')).toBeNull();
+    });
+
+    it('should offer to remove a paid bill of a recurring bill', () => {
+      const element = render(bill({ paidAt: '2026-10-04' }));
+
+      expect(element.querySelector('.bill-remove')).not.toBeNull();
     });
 
     it('should confirm inline and delete a one-off bill', () => {
