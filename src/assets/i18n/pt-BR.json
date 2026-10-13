@@ -31,6 +31,15 @@
       "tomorrow": "vence amanhã",
       "inDays": "em {{ days }} dias"
     },
+    "payment": {
+      "markPaid": "Marcar {{ name }} como paga",
+      "undo": "Desfazer pagamento de {{ name }}",
+      "valueLabel": "Valor pago",
+      "confirm": "Confirmar",
+      "cancel": "Cancelar",
+      "payError": "Não foi possível registrar o pagamento de {{ name }}. Tente novamente.",
+      "undoError": "Não foi possível desfazer o pagamento de {{ name }}. Tente novamente."
+    },
     "summary": {
       "empty": "Sem contas",
       "allPaid": "Tudo pago",

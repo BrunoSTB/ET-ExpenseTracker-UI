@@ -29,6 +29,7 @@ function bill(overrides: Partial<Bill> = {}): Bill {
 }
 
 describe('BillRowComponent', () => {
+  let component: BillRowComponent;
   let fixture: ComponentFixture<BillRowComponent>;
   let httpMock: HttpTestingController;
 
@@ -39,6 +40,7 @@ describe('BillRowComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(BillRowComponent);
+    component = fixture.componentInstance;
     httpMock = TestBed.inject(HttpTestingController);
   });
 
@@ -175,6 +177,156 @@ describe('BillRowComponent', () => {
 
       expect(removed).toEqual([]);
       expect(text(element, '.inline-confirm .error-message')).toBe('Não foi possível remover a conta.');
+    });
+  });
+
+  describe('payment', () => {
+    let paid: (number | null)[];
+    let undone: number;
+
+    beforeEach(() => {
+      paid = [];
+      undone = 0;
+      component.pay.subscribe((value) => paid.push(value));
+      component.undoPayment.subscribe(() => undone++);
+    });
+
+    function toggle(element: HTMLElement) {
+      return element.querySelector<HTMLButtonElement>('button.pay-toggle')!;
+    }
+
+    function clickToggle(element: HTMLElement) {
+      toggle(element).click();
+      fixture.detectChanges();
+    }
+
+    async function openValueInput(value: Bill) {
+      const element = render(value);
+      clickToggle(element);
+      // ngModel writes the value asynchronously.
+      await fixture.whenStable();
+      fixture.detectChanges();
+      return element;
+    }
+
+    function valueInput(element: HTMLElement) {
+      return element.querySelector<HTMLInputElement>('input.payment-value')!;
+    }
+
+    function type(element: HTMLElement, value: string) {
+      valueInput(element).value = value;
+      valueInput(element).dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+    }
+
+    function submit(element: HTMLElement) {
+      element
+        .querySelector('form.payment-form')!
+        .dispatchEvent(new Event('submit', { cancelable: true }));
+      fixture.detectChanges();
+    }
+
+    it('should render the circle as a toggle button for an unpaid bill', () => {
+      const button = toggle(render(bill()));
+
+      expect(button.getAttribute('aria-pressed')).toBe('false');
+      expect(button.getAttribute('aria-label')).toBe('Marcar Aluguel como paga');
+      expect(button.querySelector('.status-dot')?.classList).toContain('status-pending');
+    });
+
+    it('should render the circle as pressed for a paid bill', () => {
+      const button = toggle(render(bill({ paidAt: '2026-10-04' })));
+
+      expect(button.getAttribute('aria-pressed')).toBe('true');
+      expect(button.getAttribute('aria-label')).toBe('Desfazer pagamento de Aluguel');
+    });
+
+    it('should pay a fixed bill with one click, without asking the value', () => {
+      const element = render(bill());
+
+      clickToggle(element);
+
+      expect(paid).toEqual([null]);
+      expect(element.querySelector('.payment-form')).toBeNull();
+    });
+
+    it('should undo the payment of a paid bill', () => {
+      const element = render(bill({ amountType: 'VariableEstimated', value: 130, paidAt: '2026-10-04' }));
+
+      clickToggle(element);
+
+      expect(undone).toBe(1);
+      expect(paid).toEqual([]);
+      expect(element.querySelector('.payment-form')).toBeNull();
+    });
+
+    it('should ask the value of a variable bill with the estimate filled in', async () => {
+      const element = await openValueInput(
+        bill({ amountType: 'VariableEstimated', value: null, estimate: 127.43 })
+      );
+
+      expect(paid).toEqual([]);
+      expect(valueInput(element).value).toBe('127.43');
+      expect(document.activeElement).toBe(valueInput(element));
+      expect(text(element, '.payment-label')).toBe('Valor pago');
+    });
+
+    it('should pay a variable bill with the value typed', async () => {
+      const element = await openValueInput(
+        bill({ amountType: 'VariableEstimated', value: null, estimate: 127.43 })
+      );
+
+      type(element, '131.9');
+      submit(element);
+
+      expect(paid).toEqual([131.9]);
+      expect(element.querySelector('.payment-form')).toBeNull();
+    });
+
+    it('should start empty and require a value when there is no estimate', async () => {
+      const element = await openValueInput(bill({ amountType: 'VariableOnArrival', value: null }));
+      const confirm = element.querySelector<HTMLButtonElement>('.payment-confirm')!;
+
+      expect(valueInput(element).value).toBe('');
+      expect(confirm.disabled).toBeTrue();
+
+      submit(element);
+      expect(paid).toEqual([]);
+
+      type(element, '80');
+      expect(confirm.disabled).toBeFalse();
+      submit(element);
+      expect(paid).toEqual([80]);
+    });
+
+    it('should cancel with Esc and give the focus back to the circle', async () => {
+      const element = await openValueInput(bill({ amountType: 'VariableOnArrival', value: null }));
+
+      valueInput(element).dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      fixture.detectChanges();
+
+      expect(element.querySelector('.payment-form')).toBeNull();
+      expect(document.activeElement).toBe(toggle(element));
+      expect(paid).toEqual([]);
+    });
+
+    it('should cancel with the cancel button', async () => {
+      const element = await openValueInput(bill({ amountType: 'VariableOnArrival', value: null }));
+
+      element.querySelector<HTMLButtonElement>('.payment-cancel')!.click();
+      fixture.detectChanges();
+
+      expect(element.querySelector('.payment-form')).toBeNull();
+      expect(paid).toEqual([]);
+    });
+
+    it('should close the value input when the circle is clicked again', async () => {
+      const element = await openValueInput(bill({ amountType: 'VariableOnArrival', value: null }));
+
+      clickToggle(element);
+
+      expect(element.querySelector('.payment-form')).toBeNull();
+      expect(paid).toEqual([]);
     });
   });
 });

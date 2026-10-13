@@ -1,52 +1,90 @@
 <div class="bill-row">
-  <span class="status-dot status-{{ status }}" aria-hidden="true"></span>
-  <div class="bill-info">
-    <div class="bill-name">
-      {{ bill.name }}
-      @if (isVariable) {
-        <span class="tag">{{ 'bills.amountType.' + bill.amountType | transloco }}</span>
-      }
-    </div>
-    <div class="bill-due">
-      @if (status === 'paid') {
-        {{ 'bills.due.paid' | transloco: { date: (bill.paidAt | localDate: preferences) } }}
-      } @else {
-        <span class="bill-status">{{ 'bills.status.' + status | transloco }}</span>
-        · {{ 'bills.due.date' | transloco: { date: (bill.dueDate | localDate: preferences) } }}
-        @if (dueText) {
-          · {{ dueText.key | transloco: dueText.params }}
-        }
-      }
-    </div>
-  </div>
-  <span class="money bill-amount">{{ estimated ? '~' : '' }}{{ amount | money: preferences }}</span>
-  @if (isOneOff) {
+  <div class="bill-main">
     <button
+      #toggle
       type="button"
-      class="icon-button bill-remove"
-      [attr.aria-label]="'bills.row.remove' | transloco: { name: bill.name }"
-      [attr.aria-expanded]="isConfirmingRemove"
-      (click)="askRemove()"
+      class="pay-toggle status-{{ status }}"
+      [attr.aria-pressed]="isPaid"
+      [attr.aria-label]="(isPaid ? 'bills.payment.undo' : 'bills.payment.markPaid') | transloco: { name: bill.name }"
+      (click)="togglePayment()"
     >
-      <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6" />
-      </svg>
+      <span class="status-dot status-{{ status }}" aria-hidden="true"></span>
     </button>
+    <div class="bill-info">
+      <div class="bill-name">
+        {{ bill.name }}
+        @if (isVariable) {
+          <span class="tag">{{ 'bills.amountType.' + bill.amountType | transloco }}</span>
+        }
+      </div>
+      <div class="bill-due">
+        @if (status === 'paid') {
+          {{ 'bills.due.paid' | transloco: { date: (bill.paidAt | localDate: preferences) } }}
+        } @else {
+          <span class="bill-status">{{ 'bills.status.' + status | transloco }}</span>
+          · {{ 'bills.due.date' | transloco: { date: (bill.dueDate | localDate: preferences) } }}
+          @if (dueText) {
+            · {{ dueText.key | transloco: dueText.params }}
+          }
+        }
+      </div>
+    </div>
+    <span class="money bill-amount">{{ estimated ? '~' : '' }}{{ amount | money: preferences }}</span>
+    @if (isOneOff) {
+      <button
+        type="button"
+        class="icon-button bill-remove"
+        [attr.aria-label]="'bills.row.remove' | transloco: { name: bill.name }"
+        [attr.aria-expanded]="isConfirmingRemove"
+        (click)="askRemove()"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6" />
+        </svg>
+      </button>
+    }
+  </div>
+
+  @if (isEnteringValue) {
+    <form class="payment-form" (ngSubmit)="confirm()" (keydown.escape)="cancel()">
+      <label class="payment-label" [for]="'payment-value-' + bill.id">
+        {{ 'bills.payment.valueLabel' | transloco }}
+      </label>
+      <input
+        #valueInput
+        type="number"
+        class="money payment-value"
+        name="paymentValue"
+        inputmode="decimal"
+        min="0"
+        step="0.01"
+        required
+        [id]="'payment-value-' + bill.id"
+        [(ngModel)]="paymentValue"
+      />
+      <button type="submit" class="payment-confirm" [disabled]="!canConfirm">
+        {{ 'bills.payment.confirm' | transloco }}
+      </button>
+      <button type="button" class="payment-cancel" (click)="cancel()">
+        {{ 'bills.payment.cancel' | transloco }}
+      </button>
+    </form>
+  }
+
+  @if (isConfirmingRemove) {
+    <div class="inline-confirm" role="group">
+      <p class="confirm-text">{{ 'bills.row.confirmRemove' | transloco }}</p>
+      @if (removeError) {
+        <p class="error-message" role="alert">{{ 'bills.row.removeError' | transloco }}</p>
+      }
+      <div class="actions">
+        <button type="button" class="button cancel" (click)="cancelRemove()">
+          {{ 'bills.row.cancel' | transloco }}
+        </button>
+        <button type="button" class="button danger confirm" [disabled]="isRemoving" (click)="confirmRemove()">
+          {{ 'bills.row.confirm' | transloco }}
+        </button>
+      </div>
+    </div>
   }
 </div>
-@if (isConfirmingRemove) {
-  <div class="inline-confirm" role="group">
-    <p class="confirm-text">{{ 'bills.row.confirmRemove' | transloco }}</p>
-    @if (removeError) {
-      <p class="error-message" role="alert">{{ 'bills.row.removeError' | transloco }}</p>
-    }
-    <div class="actions">
-      <button type="button" class="button cancel" (click)="cancelRemove()">
-        {{ 'bills.row.cancel' | transloco }}
-      </button>
-      <button type="button" class="button danger confirm" [disabled]="isRemoving" (click)="confirmRemove()">
-        {{ 'bills.row.confirm' | transloco }}
-      </button>
-    </div>
-  </div>
-}

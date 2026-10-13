@@ -1,18 +1,20 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { BillService } from '../../services/bill.service';
 import { RecurringBillService } from '../../services/recurring-bill.service';
 import { DEFAULT_PREFERENCES, PreferencesService } from '../../services/preferences.service';
+import { Bill } from '../../types/bill';
 import { BillMonth } from '../../types/billMonth';
 import { RecurringBill } from '../../types/recurringBill';
 import { UserPreferences } from '../../types/userPreferences';
 import { MonthStripComponent } from '../month-strip/month-strip.component';
-import { MonthDetailComponent } from '../month-detail/month-detail.component';
+import { BillPaymentEvent, MonthDetailComponent } from '../month-detail/month-detail.component';
 import { RecurringBillsPanelComponent } from '../recurring-bills-panel/recurring-bills-panel.component';
 import { StatusLegendComponent } from '../status-legend/status-legend.component';
 import { AddBillFormComponent } from '../add-bill-form/add-bill-form.component';
 import { PreferencesMenuComponent } from '../preferences-menu/preferences-menu.component';
+import { toIsoDate } from '../../formatting/format';
 
 // Container of the bills screen: owns the year, the selected month, the
 // loading state and the add/edit form, passes the data down to the other
@@ -47,10 +49,14 @@ export class BillsPageComponent implements OnInit, OnDestroy {
   recurringError = false;
   // Open add/edit form; `recurringBill` is set when editing.
   form: { recurringBill: RecurringBill | null } | null = null;
+  // Translation key and bill name of the last payment that failed.
+  paymentError: { key: string; name: string } | null = null;
 
   private subscriptions = new Subscription();
   private recurringSubscription?: Subscription;
   private yearSubscription?: Subscription;
+  // Bills with a payment request in flight; clicks on them are ignored.
+  private pendingBillIds = new Set<number>();
 
   constructor(
     private billService: BillService,
@@ -134,6 +140,69 @@ export class BillsPageComponent implements OnInit, OnDestroy {
   reload() {
     this.loadRecurringBills();
     this.loadYear(false);
+  }
+
+  // Works in any month, future ones included (paying in advance).
+  payBill({ bill, value }: BillPaymentEvent) {
+    const paid: Bill = {
+      ...bill,
+      paidAt: toIsoDate(this.today),
+      value: value ?? bill.value,
+    };
+    this.updatePayment(bill, paid, this.billService.pay(bill.id, value), 'bills.payment.payError');
+  }
+
+  undoPayment(bill: Bill) {
+    // Variable bills go back to their estimate; the server answer confirms it.
+    const unpaid: Bill = {
+      ...bill,
+      paidAt: null,
+      value: bill.amountType === 'Fixed' ? bill.value : null,
+    };
+    this.updatePayment(bill, unpaid, this.billService.undoPayment(bill.id), 'bills.payment.undoError');
+  }
+
+  // Shows the change right away, then keeps the bill the server returns, or
+  // rolls back to the original bill and shows an error if the request fails.
+  private updatePayment(
+    original: Bill,
+    optimistic: Bill,
+    request: Observable<Bill>,
+    errorKey: string
+  ) {
+    if (this.pendingBillIds.has(original.id)) {
+      return;
+    }
+    this.pendingBillIds.add(original.id);
+    this.paymentError = null;
+    this.replaceBill(optimistic);
+
+    this.subscriptions.add(
+      request.subscribe({
+        next: (bill) => {
+          this.pendingBillIds.delete(original.id);
+          this.replaceBill(bill);
+        },
+        error: () => {
+          this.pendingBillIds.delete(original.id);
+          this.replaceBill(original);
+          this.paymentError = { key: errorKey, name: original.name };
+        },
+      })
+    );
+  }
+
+  // Replaces the bill with the same id, creating new arrays so the strip and
+  // the month detail recalculate. No-op if the bill is not in the loaded year.
+  private replaceBill(bill: Bill) {
+    this.months = this.months.map((billMonth) =>
+      billMonth.bills.some((current) => current.id === bill.id)
+        ? {
+            ...billMonth,
+            bills: billMonth.bills.map((current) => (current.id === bill.id ? bill : current)),
+          }
+        : billMonth
+    );
   }
 
   private changeYear(year: number, month: number) {

@@ -22,6 +22,12 @@ import {
   sortByDueDate,
 } from '../bill-status';
 
+export interface BillPaymentEvent {
+  bill: Bill;
+  // Null for Fixed bills, which keep their value.
+  value: number | null;
+}
+
 @Component({
   selector: 'app-month-detail',
   standalone: true,
@@ -41,6 +47,8 @@ export class MonthDetailComponent implements OnChanges {
   @Output() next = new EventEmitter<void>();
   @Output() addBill = new EventEmitter<void>();
   @Output() billRemoved = new EventEmitter<Bill>();
+  @Output() pay = new EventEmitter<BillPaymentEvent>();
+  @Output() undoPayment = new EventEmitter<Bill>();
 
   title = '';
   toPay: Bill[] = [];

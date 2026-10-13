@@ -5,6 +5,12 @@
     <p class="error-message" role="alert">{{ 'bills.loadError' | transloco }}</p>
   }
 
+  @if (paymentError) {
+    <p class="error-message payment-error" role="alert">
+      {{ paymentError.key | transloco: { name: paymentError.name } }}
+    </p>
+  }
+
   @if (isLoading) {
     <p class="loading" role="status">{{ 'bills.loading' | transloco }}</p>
   } @else {
@@ -27,6 +33,8 @@
           [preferences]="preferences"
           (previous)="previousMonth()"
           (next)="nextMonth()"
+          (pay)="payBill($event)"
+          (undoPayment)="undoPayment($event)"
           (addBill)="openAddForm()"
           (billRemoved)="reload()"
         ></app-month-detail>

@@ -317,4 +317,193 @@ describe('BillsPageComponent', () => {
       expect(text('app-preferences-menu .preferences-toggle')).toContain('Preferências');
     });
   });
+
+  describe('payment', () => {
+    function expectPayment(id: number) {
+      return httpMock.expectOne(environment.apiUri + `Bill/${id}/Payment`);
+    }
+
+    function names(selector: string) {
+      return Array.from(
+        (fixture.nativeElement as HTMLElement).querySelectorAll(`app-bill-row.${selector} .bill-name`)
+      ).map((name) => name.textContent?.replace(/\s+/g, ' ').trim());
+    }
+
+    function toggle(name: string) {
+      const row = Array.from(
+        (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>('app-bill-row')
+      ).find((element) => element.querySelector('.bill-name')?.textContent?.trim().startsWith(name));
+      row!.querySelector<HTMLButtonElement>('.pay-toggle')!.click();
+      fixture.detectChanges();
+    }
+
+    const october = () => [
+      {
+        month: 10,
+        bills: [
+          bill(1, { name: 'Aluguel', dueDate: '2026-10-05', value: 1500 }),
+          bill(2, { name: 'Internet', dueDate: '2026-10-20', value: 100 }),
+        ],
+      },
+    ];
+
+    it('should pay a fixed bill optimistically and keep the bill the server returns', () => {
+      init(october());
+      expect(text('.overdue-year')).toBe('1 atrasada este ano');
+
+      toggle('Aluguel');
+
+      // Moved before the server answers, with the totals, strip and year count.
+      expect(names('paid')).toEqual(['Aluguel']);
+      expect(names('to-pay')).toEqual(['Internet']);
+      expect(text('.total-paid')).toBe('R$ 1.500,00');
+      expect(text('.total-overdue')).toBe('R$ 0,00');
+      expect(fixture.nativeElement.querySelector('.overdue-year')).toBeNull();
+      expect(component.months[9].bills[0].paidAt).toBe('2026-10-08');
+
+      const req = expectPayment(1);
+      expect(req.request.method).toBe('PUT');
+      expect(req.request.body).toEqual({ value: null });
+      req.flush(bill(1, { name: 'Aluguel', dueDate: '2026-10-05', value: 1500, paidAt: '2026-10-07' }));
+      fixture.detectChanges();
+
+      expect(component.months[9].bills[0].paidAt).toBe('2026-10-07');
+      expect(names('paid')).toEqual(['Aluguel']);
+    });
+
+    it('should pay a variable bill with the value typed in the row', async () => {
+      init([
+        {
+          month: 10,
+          bills: [bill(1, { name: 'Luz', amountType: 'VariableEstimated', value: null, estimate: 127.5 })],
+        },
+      ]);
+
+      toggle('Luz');
+      httpMock.expectNone(environment.apiUri + 'Bill/1/Payment');
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      const input = fixture.nativeElement.querySelector('input.payment-value') as HTMLInputElement;
+      expect(input.value).toBe('127.5');
+      input.value = '140.25';
+      input.dispatchEvent(new Event('input'));
+      fixture.nativeElement
+        .querySelector('form.payment-form')
+        .dispatchEvent(new Event('submit', { cancelable: true }));
+      fixture.detectChanges();
+
+      expect(names('paid')).toEqual(['Luz Variável']);
+      expect(text('.total-paid')).toBe('R$ 140,25');
+
+      const req = expectPayment(1);
+      expect(req.request.method).toBe('PUT');
+      expect(req.request.body).toEqual({ value: 140.25 });
+      req.flush(bill(1, { name: 'Luz', amountType: 'VariableEstimated', value: 140.25, paidAt: '2026-10-08' }));
+    });
+
+    it('should undo a payment optimistically', () => {
+      init([
+        {
+          month: 10,
+          bills: [
+            bill(1, {
+              name: 'Luz',
+              dueDate: '2026-10-05',
+              amountType: 'VariableEstimated',
+              value: 130,
+              estimate: 127.5,
+              paidAt: '2026-10-04',
+            }),
+          ],
+        },
+      ]);
+
+      toggle('Luz');
+
+      expect(names('to-pay')).toEqual(['Luz Variável']);
+      expect(names('paid')).toEqual([]);
+      // Back to the estimate until the server answers.
+      expect(text('.total-left')).toBe('R$ 127,50');
+      expect(text('.overdue-year')).toBe('1 atrasada este ano');
+
+      const req = expectPayment(1);
+      expect(req.request.method).toBe('DELETE');
+      req.flush(bill(1, { name: 'Luz', dueDate: '2026-10-05', amountType: 'VariableEstimated', value: null, estimate: 127.5 }));
+    });
+
+    it('should pay a bill of a future month', () => {
+      init([{ month: 12, bills: [bill(1, { name: 'IPVA', dueDate: '2026-12-10', value: 850 })] }]);
+      component.selectMonth(12);
+      fixture.detectChanges();
+
+      toggle('IPVA');
+
+      expect(names('paid')).toEqual(['IPVA']);
+      expect(text('.month-card:nth-child(12) .month-summary')).toBe('Tudo pago');
+      expectPayment(1).flush(bill(1, { name: 'IPVA', dueDate: '2026-12-10', value: 850, paidAt: '2026-10-08' }));
+    });
+
+    it('should roll back and show an error when the payment fails', () => {
+      init(october());
+
+      toggle('Aluguel');
+      expect(names('paid')).toEqual(['Aluguel']);
+
+      expectPayment(1).flush(null, { status: 500, statusText: 'Server Error' });
+      fixture.detectChanges();
+
+      expect(names('paid')).toEqual([]);
+      expect(names('to-pay')).toEqual(['Aluguel', 'Internet']);
+      expect(component.months[9].bills[0]).toEqual(october()[0].bills[0]);
+      expect(text('.total-overdue')).toBe('R$ 1.500,00');
+      expect(text('.overdue-year')).toBe('1 atrasada este ano');
+      expect(text('.payment-error')).toBe(
+        'Não foi possível registrar o pagamento de Aluguel. Tente novamente.'
+      );
+    });
+
+    it('should roll back and show an error when undoing fails', () => {
+      init([{ month: 10, bills: [bill(1, { name: 'Aluguel', paidAt: '2026-10-04' })] }]);
+
+      toggle('Aluguel');
+      expectPayment(1).flush(null, { status: 500, statusText: 'Server Error' });
+      fixture.detectChanges();
+
+      expect(names('paid')).toEqual(['Aluguel']);
+      expect(text('.payment-error')).toBe(
+        'Não foi possível desfazer o pagamento de Aluguel. Tente novamente.'
+      );
+    });
+
+    it('should clear the error on the next payment', () => {
+      init(october());
+      toggle('Aluguel');
+      expectPayment(1).flush(null, { status: 500, statusText: 'Server Error' });
+      fixture.detectChanges();
+
+      toggle('Internet');
+
+      expect(fixture.nativeElement.querySelector('.payment-error')).toBeNull();
+      expectPayment(2).flush(bill(2, { name: 'Internet', paidAt: '2026-10-08' }));
+    });
+
+    it('should ignore clicks on a bill while its request is in flight', () => {
+      init(october());
+
+      toggle('Aluguel');
+      toggle('Aluguel');
+
+      // Only the first request; the second click would have undone it.
+      const req = expectPayment(1);
+      expect(req.request.method).toBe('PUT');
+      req.flush(bill(1, { name: 'Aluguel', dueDate: '2026-10-05', value: 1500, paidAt: '2026-10-08' }));
+      fixture.detectChanges();
+
+      toggle('Aluguel');
+      const undo = expectPayment(1);
+      expect(undo.request.method).toBe('DELETE');
+      undo.flush(bill(1, { name: 'Aluguel', dueDate: '2026-10-05', value: 1500 }));
+    });
+  });
 });
